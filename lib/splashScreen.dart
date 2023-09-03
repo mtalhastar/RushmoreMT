@@ -34,7 +34,7 @@ class GetStartedScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 80,
+                  height: 60,
                 ),
                 const Text(
                   'Check who’s on your mount Rushmore',
@@ -51,7 +51,7 @@ class GetStartedScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                     Get.off(const HomePage(),transition: Transition.fade);
+                     Get.off(const HomePage(),transition: Transition.fade,duration: const Duration(milliseconds: 500));
                   },
                   child: Container(
                     alignment: Alignment.center,
