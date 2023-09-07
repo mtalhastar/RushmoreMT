@@ -34,13 +34,19 @@ class _HomePageState extends State<HomePage> {
                     Positioned(
                         left: context.isPortrait? MediaQuery.of(context).size.width/13.4: MediaQuery.of(context).size.width / 13,
                         top: context.isPortrait? MediaQuery.of(context).size.height / 50: MediaQuery.of(context).size.height /8.5,
-                        child: Container(
-                          height:  context.isPortrait? MediaQuery.of(context).size.height / 10: MediaQuery.of(context).size.height / 2.6,
-                          width: MediaQuery.of(context).size.width/5.7,
-                          decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(100))),
+                        child: FittedBox(
+                          child: Container(
+                            height:  context.isPortrait? MediaQuery.of(context).size.height / 10: MediaQuery.of(context).size.height / 2.6,
+                            width: MediaQuery.of(context).size.width/5.7,
+                            decoration: const BoxDecoration(
+                                 borderRadius:
+                                    BorderRadius.all(Radius.circular(100)),
+                                image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/images/ronaldoimage.png'),
+                                    fit: BoxFit.cover),
+                            )
+                          ),
                         )),
                     Positioned(
                        left: context.isPortrait
@@ -56,10 +62,15 @@ class _HomePageState extends State<HomePage> {
                             height:  context.isPortrait
                           ?  MediaQuery.of(context).size.height / 12: MediaQuery.of(context).size.height / 3,
                             width: MediaQuery.of(context).size.width /8,
-                            decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(100))),
+                            decoration:const BoxDecoration(
+                                 borderRadius:
+                                    BorderRadius.all(Radius.circular(100)),
+                                image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/images/ronaldoimage.png'),
+                                    fit: BoxFit.cover),
+                            ),
+                          
                           )),
                     ),
                     Positioned(
@@ -74,9 +85,13 @@ class _HomePageState extends State<HomePage> {
                             height:context.isPortrait? MediaQuery.of(context).size.height / 10.9: MediaQuery.of(context).size.height / 2.5,
                             width: MediaQuery.of(context).size.width / 5.8,
                             decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(100))),
+                                 borderRadius:
+                                    BorderRadius.all(Radius.circular(100)),
+                                image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/images/ronaldoimage.png'),
+                                    fit: BoxFit.cover),
+                            ),
                           )),
                     ),
                      Positioned(
@@ -87,14 +102,23 @@ class _HomePageState extends State<HomePage> {
                           transform: Matrix4.identity()
                             ..setEntry(3, 2, 0.001)
                             ..rotateY(0.7),
-                          child: Container(
-                            height:context.isPortrait
-                          ?  MediaQuery.of(context).size.height / 11: MediaQuery.of(context).size.height / 2.4,
-                            width: MediaQuery.of(context).size.width / 5,
-                            decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(100))),
+                          child: Opacity(
+                            opacity: 0.9,
+                            child: Container(
+                              height:context.isPortrait
+                            ?  MediaQuery.of(context).size.height / 11: MediaQuery.of(context).size.height / 2.4,
+                              width: MediaQuery.of(context).size.width / 5,
+                              decoration:  const BoxDecoration(
+                                
+                                   borderRadius:
+                                      BorderRadius.all(Radius.circular(100)),
+                                  
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                          'assets/images/ronaldoimage.png'),
+                                      fit: BoxFit.cover),
+                              ),
+                            ),
                           )),
                     )
                   ]),

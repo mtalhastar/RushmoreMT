@@ -51,7 +51,9 @@ class GetStartedScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                     Get.off(const HomePage(),transition: Transition.fade,duration: const Duration(milliseconds: 500));
+                    Get.off(const HomePage(),
+                        transition: Transition.fade,
+                        duration: const Duration(milliseconds: 500));
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -74,7 +76,7 @@ class GetStartedScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                  const SizedBox(
+                const SizedBox(
                   height: 60,
                 ),
               ],
