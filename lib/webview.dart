@@ -5,7 +5,8 @@
 //Implement Sharing Options
 
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
 // Import for Android features.
 
 class WebScreenShots extends StatefulWidget {
@@ -17,7 +18,26 @@ class WebScreenShots extends StatefulWidget {
 
 class _WebScreenShotsState extends State<WebScreenShots> {
   double _progress = 0;
-  late final InAppWebViewController inAppWebViewController;
+  late final WebViewController webViewController;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    webViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+           
+                _progress = progress / 100;
+           
+          
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse('https://www.google.com/search?q=ronaldo+face'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,44 +47,38 @@ class _WebScreenShotsState extends State<WebScreenShots> {
           color: Colors.white,
           child: Stack(
             children: [
-              InAppWebView(
-                initialUrlRequest: URLRequest(
-                    url: Uri.parse(
-                        'https://www.google.com/search?q=ronaldo+face')),
-                onWebViewCreated: (InAppWebViewController controller) {
-                  inAppWebViewController = controller;
-                },
-                
-                onProgressChanged: (controller, progress) => setState(() {
-                  _progress = progress / 100;
-                }),
-              ),
-              if (_progress < 1)
-                LinearProgressIndicator(
-                  value: _progress
-                ),
-                Positioned(
+              WebViewWidget(controller: webViewController),
+              if (_progress < 1) LinearProgressIndicator(value: _progress),
+              Positioned(
                   bottom: 50,
-                  left: 50,
-                  right: 50,
+                  right: 40,
+                  left: 40,
                   child: InkWell(
-                    
-                    child: Container(height: 60,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                       boxShadow: [
+                    child: Container(
+                      height: 60,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                        boxShadow: [
                           BoxShadow(
-                            color: Color.fromARGB(255, 36, 36, 36), // Shadow color
-                            offset: Offset(0, 2), // Offset in x and y directions
+                            color:
+                                Color.fromARGB(255, 36, 36, 36), // Shadow color
+                            offset:
+                                Offset(0, 2), // Offset in x and y directions
                             blurRadius: 4, // Blur radius
                             spreadRadius: 0, // Spread radius
                           ),
                         ],
                       ),
-                      
-                      child:  const Text('Process Image',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 20), ),
+                      child: const Text(
+                        'Process Image',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      ),
                     ),
                   ))
             ],
