@@ -6,7 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
+import 'package:rushmore/controllers/homeController.dart';
 // Import for Android features.
 
 class WebScreenShots extends StatefulWidget {
@@ -19,25 +19,8 @@ class WebScreenShots extends StatefulWidget {
 class _WebScreenShotsState extends State<WebScreenShots> {
   double _progress = 0;
   late final WebViewController webViewController;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
-           
-                _progress = progress / 100;
-           
-          
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse('https://www.google.com/search?q=ronaldo+face'));
-  }
+  int counter = 0;
+  final celebritiesLength = HomeController.instance.celebrities.length;
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +30,32 @@ class _WebScreenShotsState extends State<WebScreenShots> {
           color: Colors.white,
           child: Stack(
             children: [
-              WebViewWidget(controller: webViewController),
+              WebViewWidget(
+                  controller: webViewController
+                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
+                    ..setNavigationDelegate(
+                      NavigationDelegate(
+                        onProgress: (int progress) {
+                          _progress = progress / 100;
+                        },
+                      ),
+                    )
+                    ..loadRequest(Uri.parse(
+                        'https://www.google.com/search?q=${HomeController.instance.celebrities[counter]}+face'))),
               if (_progress < 1) LinearProgressIndicator(value: _progress),
               Positioned(
                   bottom: 50,
                   right: 40,
                   left: 40,
                   child: InkWell(
+                    onTap: () {
+                          if (counter < celebritiesLength) {
+                           setState(() {
+                          counter++;
+                        });
+                        }
+                    },
                     child: Container(
                       height: 60,
                       padding: const EdgeInsets.symmetric(horizontal: 20),

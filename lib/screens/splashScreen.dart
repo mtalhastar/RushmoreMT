@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rushmore/homeScreen.dart';
+import 'package:rushmore/controllers/homeController.dart';
+import 'package:rushmore/screens/homeScreen.dart';
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
+  
     return Scaffold(
       body: Container(
         color: Colors.white,

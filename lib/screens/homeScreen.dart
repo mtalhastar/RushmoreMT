@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rushmore/webview.dart';
+import 'package:rushmore/screens/webview.dart';
 import 'package:rushmore/widgets/cardwidget.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,10 +10,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   List<String> celebrities = [];
-
+  
   void submitTheForm() {
     final validation = _formKey.currentState!.validate();
     if (!validation) {
