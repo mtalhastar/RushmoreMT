@@ -5,6 +5,8 @@
 //Implement Sharing Options
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:rushmore/screens/resultPage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:rushmore/controllers/homeController.dart';
 // Import for Android features.
@@ -18,7 +20,7 @@ class WebScreenShots extends StatefulWidget {
 
 class _WebScreenShotsState extends State<WebScreenShots> {
   double _progress = 0;
-  late final WebViewController webViewController;
+
   int counter = 0;
   final celebritiesLength = HomeController.instance.celebrities.length;
 
@@ -31,7 +33,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
           child: Stack(
             children: [
               WebViewWidget(
-                  controller: webViewController
+                  controller: WebViewController()
                     ..setJavaScriptMode(JavaScriptMode.unrestricted)
                     ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
                     ..setNavigationDelegate(
@@ -50,11 +52,13 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                   left: 40,
                   child: InkWell(
                     onTap: () {
-                          if (counter < celebritiesLength) {
-                           setState(() {
+                      if (counter < celebritiesLength - 1) {
+                        setState(() {
                           counter++;
                         });
-                        }
+                      } else {
+                        Get.off(const ResultScreen());
+                      }
                     },
                     child: Container(
                       height: 60,

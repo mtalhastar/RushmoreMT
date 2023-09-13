@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rushmore/controllers/homeController.dart';
 import 'package:rushmore/screens/webview.dart';
 import 'package:rushmore/widgets/cardwidget.dart';
 
@@ -10,17 +11,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<String> celebrities = [];
-  
+
   void submitTheForm() {
     final validation = _formKey.currentState!.validate();
     if (!validation) {
+      Get.snackbar('Invalid Data', 'Your Fields might be empty');
       return;
+    } else {
+      _formKey.currentState!.save();
+      HomeController.instance.addCeleberities(celebrities);
+      Get.to(const WebScreenShots());
     }
-    _formKey.currentState!.save();
-    
   }
 
   @override
@@ -62,6 +65,8 @@ class _HomePageState extends State<HomePage> {
                   child: Column(children: [
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 40),
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      alignment: Alignment.center,
                       height: 49,
                       decoration: ShapeDecoration(
                         color: const Color.fromARGB(255, 250, 250, 250),
@@ -74,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                           if (value == null ||
                               value.trim().length <= 0 ||
                               value.isEmpty) {
-                            return 'Invalid Celebrity Name';
+                            return;
                           }
                           return null;
                         },
@@ -111,15 +116,16 @@ class _HomePageState extends State<HomePage> {
                           if (value == null ||
                               value.trim().length <= 0 ||
                               value.isEmpty) {
-                            return 'Invalid Celebrity Name';
+                            return 'Error';
                           }
                           return null;
                         },
                         onSaved: (value) {
-                         String celebrity2 = value!;
-                         celebrities.add(celebrity2);
+                          String celebrity2 = value!;
+                          celebrities.add(celebrity2);
                         },
                         decoration: const InputDecoration(
+                          errorStyle: TextStyle(height: 0),
                           border: InputBorder.none,
                           prefixIcon: Icon(
                             Icons.search,
@@ -145,10 +151,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: TextFormField(
                         validator: (value) {
-                          if (value == null ||
-                              value.trim().length <= 0 ||
-                              value.isEmpty) {
-                            return 'Invalid Celebrity Name';
+                          if (value == null || value.isEmpty) {
+                            return;
                           }
                           return null;
                         },
@@ -157,6 +161,7 @@ class _HomePageState extends State<HomePage> {
                           celebrities.add(celebrity3);
                         },
                         decoration: const InputDecoration(
+                          errorStyle: TextStyle(height: 0),
                           border: InputBorder.none,
                           prefixIcon: Icon(
                             Icons.search,
@@ -183,19 +188,18 @@ class _HomePageState extends State<HomePage> {
                       child: TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value == null ||
-                              value.trim().length <= 0 ||
-                              value.isEmpty) {
-                            return 'Invalid Celebrity Name';
+                          if (value == null || value.isEmpty) {
+                            return;
                           }
                           return null;
                         },
                         onSaved: (value) {
-                         String celebrity4 = value!;
-                         celebrities.add(celebrity4);
+                          String celebrity4 = value!;
+                          celebrities.add(celebrity4);
                         },
                         decoration: const InputDecoration(
                           border: InputBorder.none,
+                          errorStyle: TextStyle(height: 0),
                           prefixIcon: Icon(
                             Icons.search,
                             color: Color.fromARGB(88, 0, 0, 0),
@@ -212,7 +216,9 @@ class _HomePageState extends State<HomePage> {
                   height: 40,
                 ),
                 InkWell(
-                  onTap: () => Get.to(const WebScreenShots()),
+                  onTap: () {
+                    submitTheForm();
+                  },
                   child: Container(
                     alignment: Alignment.center,
                     margin: const EdgeInsets.symmetric(horizontal: 40),
