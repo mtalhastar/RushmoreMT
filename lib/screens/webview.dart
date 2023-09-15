@@ -4,7 +4,11 @@
 //Placing them in the image widget
 //Implement Sharing Options
 
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:rushmore/screens/resultPage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -20,9 +24,22 @@ class WebScreenShots extends StatefulWidget {
 
 class _WebScreenShotsState extends State<WebScreenShots> {
   double _progress = 0;
-
   int counter = 0;
   final celebritiesLength = HomeController.instance.celebrities.length;
+  GlobalKey globalKey = GlobalKey();
+  Uint8List? capturedImageBytes;
+
+  void captureScreenshot() async {
+    RenderRepaintBoundary boundary =
+        globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    if (byteData != null) {
+      setState(() {
+        capturedImageBytes = byteData.buffer.asUint8List();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,19 +49,22 @@ class _WebScreenShotsState extends State<WebScreenShots> {
           color: Colors.white,
           child: Stack(
             children: [
-              WebViewWidget(
-                  controller: WebViewController()
-                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                    ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
-                    ..setNavigationDelegate(
-                      NavigationDelegate(
-                        onProgress: (int progress) {
-                          _progress = progress / 100;
-                        },
-                      ),
-                    )
-                    ..loadRequest(Uri.parse(
-                        'https://www.google.com/search?q=${HomeController.instance.celebrities[counter]}+face'))),
+              RepaintBoundary(
+                key: globalKey,
+                child: WebViewWidget(
+                    controller: WebViewController()
+                      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                      ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
+                      ..setNavigationDelegate(
+                        NavigationDelegate(
+                          onProgress: (int progress) {
+                            _progress = progress / 100;
+                          },
+                        ),
+                      )
+                      ..loadRequest(Uri.parse(
+                          'https://www.google.com/search?q=${HomeController.instance.celebrities[counter]}+face'))),
+              ),
               if (_progress < 1) LinearProgressIndicator(value: _progress),
               Positioned(
                   bottom: 50,

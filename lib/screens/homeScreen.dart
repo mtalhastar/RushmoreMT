@@ -65,7 +65,6 @@ class _HomePageState extends State<HomePage> {
                   child: Column(children: [
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 40),
-                      padding: EdgeInsets.symmetric(vertical: 10),
                       alignment: Alignment.center,
                       height: 49,
                       decoration: ShapeDecoration(
@@ -79,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                           if (value == null ||
                               value.trim().length <= 0 ||
                               value.isEmpty) {
-                            return;
+                            return '';
                           }
                           return null;
                         },
@@ -116,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                           if (value == null ||
                               value.trim().length <= 0 ||
                               value.isEmpty) {
-                            return 'Error';
+                            return '';
                           }
                           return null;
                         },
@@ -152,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                       child: TextFormField(
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return;
+                            return '';
                           }
                           return null;
                         },
@@ -189,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return;
+                            return '';
                           }
                           return null;
                         },
