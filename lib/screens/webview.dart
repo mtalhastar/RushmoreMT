@@ -29,7 +29,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? capturedImageBytes;
 
-  void captureScreenshot() async {
+  Future<void> captureScreenshot() async {
     RenderRepaintBoundary boundary =
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage(pixelRatio: 3.0);
@@ -37,6 +37,9 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     if (byteData != null) {
       setState(() {
         capturedImageBytes = byteData.buffer.asUint8List();
+        HomeController.instance.addImages(capturedImageBytes!);
+        print(HomeController.instance.imagesList.length);
+        print(capturedImageBytes!);
       });
     }
   }
@@ -55,17 +58,9 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                     controller: WebViewController()
                       ..setJavaScriptMode(JavaScriptMode.unrestricted)
                       ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
-                      ..setNavigationDelegate(
-                        NavigationDelegate(
-                          onProgress: (int progress) {
-                            _progress = progress / 100;
-                          },
-                        ),
-                      )
                       ..loadRequest(Uri.parse(
                           'https://www.google.com/search?q=${HomeController.instance.celebrities[counter]}+face'))),
               ),
-              if (_progress < 1) LinearProgressIndicator(value: _progress),
               Positioned(
                   bottom: 50,
                   right: 40,
@@ -73,11 +68,12 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                   child: InkWell(
                     onTap: () {
                       if (counter < celebritiesLength - 1) {
-                        setState(() {
-                          counter++;
-                        });
+                        captureScreenshot().then((value) => setState(() {
+                              counter++;
+                            }));
                       } else {
-                        Get.off(const ResultScreen());
+                        captureScreenshot()
+                            .then((value) => Get.off(const ResultScreen()));
                       }
                     },
                     child: Container(

@@ -1,13 +1,20 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CardWidget extends StatelessWidget {
-  final String image1;
-  final String image2;
-  final String image3;
-  final String image4;
+class CardWidgetTwo extends StatelessWidget {
+  final Uint8List image1;
+  final Uint8List image2;
+  final Uint8List image3;
+  final Uint8List image4;
 
-  const CardWidget({super.key,required this.image1,required this.image2,required this.image3,required this.image4});
+  const CardWidgetTwo(
+      {super.key,
+      required this.image1,
+      required this.image2,
+      required this.image3,
+      required this.image4});
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +41,10 @@ class CardWidget extends StatelessWidget {
                       ? MediaQuery.of(context).size.height / 10
                       : MediaQuery.of(context).size.height / 2.6,
                   width: MediaQuery.of(context).size.width / 5.7,
-                  decoration:  BoxDecoration(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(100)),
                     image: DecorationImage(
-                        image: AssetImage(image1),
-                        fit: BoxFit.cover),
+                        image: MemoryImage(image1), fit: BoxFit.cover),
                   )),
             )),
         Positioned(
@@ -58,11 +64,10 @@ class CardWidget extends StatelessWidget {
                     ? MediaQuery.of(context).size.height / 12
                     : MediaQuery.of(context).size.height / 3,
                 width: MediaQuery.of(context).size.width / 8,
-                decoration:  BoxDecoration(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(100)),
                   image: DecorationImage(
-                      image: AssetImage(image2),
-                      fit: BoxFit.cover),
+                      image: MemoryImage(image2), fit: BoxFit.cover),
                 ),
               )),
         ),
@@ -83,8 +88,7 @@ class CardWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(100)),
                   image: DecorationImage(
-                      image: AssetImage(image3),
-                      fit: BoxFit.cover),
+                      image: MemoryImage(image3), fit: BoxFit.cover),
                 ),
               )),
         ),
@@ -104,11 +108,10 @@ class CardWidget extends StatelessWidget {
                       ? MediaQuery.of(context).size.height / 11
                       : MediaQuery.of(context).size.height / 2.4,
                   width: MediaQuery.of(context).size.width / 5,
-                  decoration:  BoxDecoration(
+                  decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(100)),
                     image: DecorationImage(
-                        image: AssetImage(image4),
-                        fit: BoxFit.cover),
+                        image: MemoryImage(image4), fit: BoxFit.cover),
                   ),
                 ),
               )),
