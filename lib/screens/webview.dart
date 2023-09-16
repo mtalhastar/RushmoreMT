@@ -4,12 +4,14 @@
 //Placing them in the image widget
 //Implement Sharing Options
 
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+
 import 'package:rushmore/screens/resultPage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:rushmore/controllers/homeController.dart';
@@ -35,12 +37,55 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     ui.Image image = await boundary.toImage(pixelRatio: 3.0);
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     if (byteData != null) {
-      setState(() {
+      setState(() async {
         capturedImageBytes = byteData.buffer.asUint8List();
-        HomeController.instance.addImages(capturedImageBytes!);
+        final facebytes = await detectAndCropSingleFace(capturedImageBytes!);
+        if (facebytes == null) {
+          print('no facr found');
+          return;
+        }
+        HomeController.instance.addImages(facebytes!);
         print(HomeController.instance.imagesList.length);
-        print(capturedImageBytes!);
       });
+    }
+  }
+
+  Future<Uint8List?> detectAndCropSingleFace(Uint8List imageBytes) async {
+    final faceDetector = FaceDetector(options: FaceDetectorOptions());
+
+    final inputImage = InputImage.fromBytes(
+      bytes: imageBytes,
+      metadata: InputImageMetadata(
+          rotation: InputImageRotation.rotation0deg,
+          size: const Size(100, 100),
+          format: InputImageFormat.nv21,
+          bytesPerRow: 100),
+    );
+
+    try {
+      final faces = await faceDetector.processImage(inputImage);
+
+      if (faces.isEmpty || faces.length > 1) {
+        print('No face detected');
+        return null;
+      }
+
+      final face = faces.first;
+      final rect = face.boundingBox;
+      final x = rect.left.toInt();
+      final y = rect.top.toInt();
+      final width = rect.width.toInt();
+      final height = rect.height.toInt();
+
+      final croppedFace = Uint8List.fromList(
+          imageBytes.sublist(y, y + height).getRange(x, x + width).toList());
+
+      return croppedFace;
+    } catch (e) {
+      print('Error during face detection: $e');
+      return null;
+    } finally {
+      await faceDetector.close();
     }
   }
 
