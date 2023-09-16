@@ -4,6 +4,8 @@
 //Placing them in the image widget
 //Implement Sharing Options
 
+import 'dart:io';
+
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -11,7 +13,8 @@ import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rushmore/screens/resultPage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:rushmore/controllers/homeController.dart';
@@ -32,6 +35,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   Uint8List? capturedImageBytes;
 
   Future<void> captureScreenshot() async {
+    print('i am clicked');
     RenderRepaintBoundary boundary =
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage(pixelRatio: 3.0);
@@ -44,42 +48,55 @@ class _WebScreenShotsState extends State<WebScreenShots> {
           print('no facr found');
           return;
         }
-        HomeController.instance.addImages(facebytes!);
+        HomeController.instance.addImages(facebytes);
         print(HomeController.instance.imagesList.length);
       });
     }
   }
 
   Future<Uint8List?> detectAndCropSingleFace(Uint8List imageBytes) async {
-    final faceDetector = FaceDetector(options: FaceDetectorOptions());
-
-    final inputImage = InputImage.fromBytes(
-      bytes: imageBytes,
-      metadata: InputImageMetadata(
-          rotation: InputImageRotation.rotation0deg,
-          size: const Size(100, 100),
-          format: InputImageFormat.nv21,
-          bytesPerRow: 100),
-    );
-
+    final tempDir = await getTemporaryDirectory();
+    final tempFile = File('${tempDir.path}/temp_image.jpg');
+    await tempFile.writeAsBytes(imageBytes);
+    final faceDetector = FaceDetector(
+        options: FaceDetectorOptions(
+            enableTracking: true,
+            enableLandmarks: true,
+            enableClassification: true,
+            enableContours: true));
+    print('1');
+    //convert imageBytes into file
+    final inputImage = InputImage.fromFile(tempFile);
+    print('2');
     try {
       final faces = await faceDetector.processImage(inputImage);
-
-      if (faces.isEmpty || faces.length > 1) {
+      print('3');
+      if (faces.isEmpty) {
         print('No face detected');
         return null;
       }
-
+      print('4');
       final face = faces.first;
       final rect = face.boundingBox;
       final x = rect.left.toInt();
+      print(x);
       final y = rect.top.toInt();
+      print(y);
       final width = rect.width.toInt();
+      print(width);
       final height = rect.height.toInt();
-
-      final croppedFace = Uint8List.fromList(
-          imageBytes.sublist(y, y + height).getRange(x, x + width).toList());
-
+      print(height);
+      final originalImage = img.decodeImage(imageBytes)!;
+        img.Image cropped= img.copyCrop(
+        originalImage,
+        x:x,
+        y:y,
+        width:width,
+        height: height,
+      );
+      final croppedImageBytes = img.encodeJpg(cropped);
+      final croppedFace = Uint8List.fromList(croppedImageBytes);
+      await tempFile.delete();
       return croppedFace;
     } catch (e) {
       print('Error during face detection: $e');
@@ -112,6 +129,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                   left: 40,
                   child: InkWell(
                     onTap: () {
+                       Get.off(const ResultScreen());
                       if (counter < celebritiesLength - 1) {
                         captureScreenshot().then((value) => setState(() {
                               counter++;

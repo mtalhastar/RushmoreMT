@@ -113,8 +113,7 @@ class _HomePageState extends State<HomePage> {
                       child: TextFormField(
                         validator: (value) {
                           if (value == null ||
-                              value.trim().length <= 0 ||
-                              value.isEmpty) {
+                              value.trim().length <= 0 || value.isEmpty) {
                             return '';
                           }
                           return null;
