@@ -5,6 +5,7 @@
 //Implement Sharing Options
 
 import 'dart:io';
+import 'dart:ui';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -119,51 +120,80 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       body: Container(
           width: double.infinity,
           color: Colors.white,
-          child: Stack(
-            children: [
-              RepaintBoundary(
-                key: globalKey,
-                child: WebViewWidget(
-                    controller: WebViewController()
-                      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                      ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
-                      ..loadRequest(Uri.parse(
-                          'https://www.google.com/search?q=${HomeController.instance.celebrities[counter]}+face'))),
-              ),
-              Positioned(
-                  bottom: 50,
-                  right: 40,
-                  left: 40,
-                  child: InkWell(
-                    onTap: captureScreenshot,
-                    child: Container(
-                      height: 60,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                        boxShadow: [
-                          BoxShadow(
-                            color:
-                                Color.fromARGB(255, 36, 36, 36), // Shadow color
-                            offset:
-                                Offset(0, 2), // Offset in x and y directions
-                            blurRadius: 4, // Blur radius
-                            spreadRadius: 0, // Spread radius
+          child: RepaintBoundary(
+             key: globalKey,
+            child: Stack(
+              children: [
+                
+                   WebViewWidget(
+                      controller: WebViewController()
+                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                        ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
+                        ..loadRequest(Uri.parse(
+                            'https://www.google.com/search?q=${HomeController.instance.celebrities[counter]}+face'))),
+                
+                Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: ClipRect(
+                      child: Stack(
+                        children:[ Container(
+                          height: 200,
+                          decoration: const BoxDecoration(
+                                color: Color.fromARGB(0, 255, 255, 255),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(40.0),
+                                  topRight: Radius.circular(40.0))),
+                        ),
+                        Positioned.fill(child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                          child: Container(
+                            height: 200,
+                              decoration: const BoxDecoration(
+                                  color: Color.fromARGB(0, 255, 255, 255),
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(40.0),
+                                      topRight: Radius.circular(40.0)))
                           ),
-                        ],
+                        ))
+                                ]),
+                    )),
+                Positioned(
+                    bottom: 50,
+                    right: 40,
+                    left: 40,
+                    child: InkWell(
+                      onTap: captureScreenshot,
+                      child: Container(
+                        height: 60,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Color.fromARGB(255, 36, 36, 36), // Shadow color
+                              offset:
+                                  Offset(0, 2), // Offset in x and y directions
+                              blurRadius: 4, // Blur radius
+                              spreadRadius: 0, // Spread radius
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          'Process Image',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
                       ),
-                      child: const Text(
-                        'Process Image',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                      ),
-                    ),
-                  ))
-            ],
+                    ))
+              ],
+            ),
           )),
     );
   }
