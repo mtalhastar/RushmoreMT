@@ -45,11 +45,19 @@ class _WebScreenShotsState extends State<WebScreenShots> {
         capturedImageBytes = byteData.buffer.asUint8List();
         final facebytes = await detectAndCropSingleFace(capturedImageBytes!);
         if (facebytes == null) {
-          print('no facr found');
+          print('no face found');
           return;
         }
         HomeController.instance.addImages(facebytes);
         print(HomeController.instance.imagesList.length);
+
+        if (counter < celebritiesLength - 1) {
+          setState(() {
+            counter++;
+          });
+        } else {
+          Get.off(const ResultScreen());
+        }
       });
     }
   }
@@ -87,11 +95,11 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       final height = rect.height.toInt();
       print(height);
       final originalImage = img.decodeImage(imageBytes)!;
-        img.Image cropped= img.copyCrop(
+      img.Image cropped = img.copyCrop(
         originalImage,
-        x:x,
-        y:y,
-        width:width,
+        x: x,
+        y: y,
+        width: width,
         height: height,
       );
       final croppedImageBytes = img.encodeJpg(cropped);
@@ -128,17 +136,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                   right: 40,
                   left: 40,
                   child: InkWell(
-                    onTap: () {
-                       Get.off(const ResultScreen());
-                      if (counter < celebritiesLength - 1) {
-                        captureScreenshot().then((value) => setState(() {
-                              counter++;
-                            }));
-                      } else {
-                        captureScreenshot()
-                            .then((value) => Get.off(const ResultScreen()));
-                      }
-                    },
+                    onTap: captureScreenshot,
                     child: Container(
                       height: 60,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
