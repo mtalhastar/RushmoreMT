@@ -40,9 +40,9 @@ class _HomePageState extends State<HomePage> {
               children: [
                 const CardWidget(
                   image1: 'assets/images/ronaldoimage.png',
-                  image2: 'assets/images/ronaldoimage.png',
-                  image3: 'assets/images/ronaldoimage.png',
-                  image4: 'assets/images/ronaldoimage.png',
+                  image2: 'assets/images/messi.png',
+                  image3: 'assets/images/pele.png',
+                  image4: 'assets/images/zlatin.png',
                 ),
                 const SizedBox(
                   height: 40,

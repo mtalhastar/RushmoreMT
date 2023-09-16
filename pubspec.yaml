@@ -77,6 +77,11 @@ flutter:
     - assets/images/rushmore.png
     - assets/images/mtrushmore.png
     - assets/images/ronaldoimage.png
+    - assets/images/messi.png
+    - assets/images/zlatin.png
+    - assets/images/pele.png
+
+    
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
