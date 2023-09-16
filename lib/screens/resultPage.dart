@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rushmore/controllers/homeController.dart';
+import 'package:rushmore/screens/homeScreen.dart';
 import 'package:rushmore/widgets/CardWidgetTwo.dart';
 
 class ResultScreen extends StatelessWidget {
@@ -96,7 +98,9 @@ class ResultScreen extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () {
-                          
+                          HomeController.instance.imagesList.clear();
+                          HomeController.instance.celebrities.clear();
+                          Get.off(HomePage(), transition: Transition.fadeIn);
                         },
                         child: Container(
                           width: 284,
