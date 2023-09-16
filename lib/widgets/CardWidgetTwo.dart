@@ -101,8 +101,6 @@ class CardWidgetTwo extends StatelessWidget {
               transform: Matrix4.identity()
                 ..setEntry(3, 2, 0.001)
                 ..rotateY(0.7),
-              child: Opacity(
-                opacity: 0.9,
                 child: Container(
                   height: context.isPortrait
                       ? MediaQuery.of(context).size.height / 11
@@ -114,7 +112,7 @@ class CardWidgetTwo extends StatelessWidget {
                         image: MemoryImage(image4), fit: BoxFit.cover),
                   ),
                 ),
-              )),
+              ),
         )
       ]),
     );
