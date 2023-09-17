@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:screenshot/screenshot.dart';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rushmore/controllers/homeController.dart';
@@ -17,9 +19,8 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreen extends State<ResultScreen> {
-  final ScreenshotController screenshotController = ScreenshotController();
-  Uint8List? _imageFile;
-
+  GlobalKey globalKey = GlobalKey();
+  Uint8List? capturedImageBytes;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,8 +35,8 @@ class _ResultScreen extends State<ResultScreen> {
                       const SizedBox(
                         height: 100,
                       ),
-                      Screenshot(
-                        controller: screenshotController,
+                      RepaintBoundary(
+                        key: globalKey,
                         child: CardWidgetTwo(
                           image1: HomeController.instance.imagesList[0],
                           image2: HomeController.instance.imagesList[1],
@@ -74,9 +75,17 @@ class _ResultScreen extends State<ResultScreen> {
                       ),
                       InkWell(
                           onTap: () async {
-                            Uint8List? capturedImage =
-                                await screenshotController.capture();
-                            if (capturedImage != null) {
+                            RenderRepaintBoundary boundary =
+                                globalKey.currentContext!.findRenderObject()
+                                    as RenderRepaintBoundary;
+                            ui.Image image =
+                                await boundary.toImage(pixelRatio: 3.0);
+                            ByteData? byteData = await image.toByteData(
+                                format: ui.ImageByteFormat.png);
+                            if (byteData != null) {
+                              capturedImageBytes =
+                                  byteData.buffer.asUint8List();
+                            }
                               // Get the temporary directory path
                               Directory tempDir = await getTemporaryDirectory();
                               String tempPath = tempDir.path;
@@ -84,12 +93,12 @@ class _ResultScreen extends State<ResultScreen> {
                               // Create a file in the temporary directory with a unique name
                               String filePath = '$tempPath/mount_rushmore.png';
                               File file = File(filePath);
-                              await file.writeAsBytes(capturedImage);
+                              await file.writeAsBytes(capturedImageBytes!);
+                              XFile xFile = XFile(filePath);
 
-                              await Share.shareFiles([filePath],
+                              await Share.shareXFiles([xFile],
                                   text: 'Check out my Mount Rushmore!');
-                            }
-                          },
+                            },
                           child: Container(
                               width: 284,
                               height: 57,
