@@ -1,13 +1,24 @@
-
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:screenshot/screenshot.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rushmore/controllers/homeController.dart';
 import 'package:rushmore/screens/homeScreen.dart';
 import 'package:rushmore/widgets/CardWidgetTwo.dart';
+import 'package:share_plus/share_plus.dart';
 
-
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   const ResultScreen({super.key});
+
+  @override
+  State<ResultScreen> createState() => _ResultScreen();
+}
+
+class _ResultScreen extends State<ResultScreen> {
+  final ScreenshotController screenshotController = ScreenshotController();
+  Uint8List? _imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +34,14 @@ class ResultScreen extends StatelessWidget {
                       const SizedBox(
                         height: 100,
                       ),
-                      CardWidgetTwo(
-                        image1: HomeController.instance.imagesList[0],
-                        image2: HomeController.instance.imagesList[1],
-                        image3: HomeController.instance.imagesList[2],
-                        image4: HomeController.instance.imagesList[3],
+                      Screenshot(
+                        controller: screenshotController,
+                        child: CardWidgetTwo(
+                          image1: HomeController.instance.imagesList[0],
+                          image2: HomeController.instance.imagesList[1],
+                          image3: HomeController.instance.imagesList[2],
+                          image4: HomeController.instance.imagesList[3],
+                        ),
                       ),
                       const SizedBox(
                         height: 40,
@@ -58,25 +72,43 @@ class ResultScreen extends StatelessWidget {
                       const SizedBox(
                         height: 30,
                       ),
-                      Container(
-                          width: 284,
-                          height: 57,
-                          alignment: Alignment.center,
-                          decoration: ShapeDecoration(
-                            color: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                          ),
-                          child: const Text(
-                            'Share',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          )),
+                      InkWell(
+                          onTap: () async {
+                            Uint8List? capturedImage =
+                                await screenshotController.capture();
+                            if (capturedImage != null) {
+                              // Get the temporary directory path
+                              Directory tempDir = await getTemporaryDirectory();
+                              String tempPath = tempDir.path;
+
+                              // Create a file in the temporary directory with a unique name
+                              String filePath = '$tempPath/mount_rushmore.png';
+                              File file = File(filePath);
+                              await file.writeAsBytes(capturedImage);
+
+                              await Share.shareFiles([filePath],
+                                  text: 'Check out my Mount Rushmore!');
+                            }
+                          },
+                          child: Container(
+                              width: 284,
+                              height: 57,
+                              alignment: Alignment.center,
+                              decoration: ShapeDecoration(
+                                color: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                              ),
+                              child: const Text(
+                                'Share',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ))),
                       const SizedBox(
                         height: 20,
                       ),
@@ -96,7 +128,8 @@ class ResultScreen extends StatelessWidget {
                         onTap: () {
                           HomeController.instance.celebrities.clear();
                           HomeController.instance.imagesList.clear();
-                          Get.off(const HomePage(),transition: Transition.fade);
+                          Get.off(const HomePage(),
+                              transition: Transition.fade);
                         },
                         child: Container(
                             width: 284,

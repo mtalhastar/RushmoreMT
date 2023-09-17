@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
       //else this
       Get.defaultDialog(
         title: 'Choose The Platform',
-        titlePadding: EdgeInsets.all(20),
+        titlePadding:  EdgeInsets.all(20),
         content: Column(
           children: [
             Row(
@@ -44,12 +44,12 @@ class _HomePageState extends State<HomePage> {
                 InkWell(
                     onTap: () {
                       Get.to(const WebScreenShots(
-                          url: 'https://www.flickr.com/search/?text='));
+                          url: 'https://www.shutterstock.com/search/'));
                     },
                     child: Container(
-                      height: 70,
-                      width: 70,
-                      child: Image.asset('assets/images/flicker.jpg'),
+                      height: 40,
+                      width: 40,
+                      child: Image.asset('assets/images/stock.png'),
                     )),
                 InkWell(
                     onTap: () {
