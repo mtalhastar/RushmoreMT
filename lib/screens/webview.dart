@@ -15,13 +15,15 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rushmore/screens/homeScreen.dart';
 import 'package:rushmore/screens/resultPage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:rushmore/controllers/homeController.dart';
 // Import for Android features.
 
 class WebScreenShots extends StatefulWidget {
-  const WebScreenShots({super.key});
+  final String url;
+  const WebScreenShots({super.key, required this.url});
 
   @override
   State<WebScreenShots> createState() => _WebScreenShotsState();
@@ -35,7 +37,6 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   Uint8List? capturedImageBytes;
 
   Future<void> captureScreenshot() async {
-    print('i am clicked');
     RenderRepaintBoundary boundary =
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage(pixelRatio: 3.0);
@@ -45,11 +46,12 @@ class _WebScreenShotsState extends State<WebScreenShots> {
         capturedImageBytes = byteData.buffer.asUint8List();
         final facebytes = await detectAndCropSingleFace(capturedImageBytes!);
         if (facebytes == null) {
-          print('no face found');
+          HomeController.instance.imagesList.clear();
+          HomeController.instance.celebrities.clear();
+          Get.off(const HomePage(), transition: Transition.fade);
           return;
         }
         HomeController.instance.addImages(facebytes);
-        print(HomeController.instance.imagesList.length);
 
         if (counter < celebritiesLength - 1) {
           setState(() {
@@ -72,29 +74,24 @@ class _WebScreenShotsState extends State<WebScreenShots> {
             enableLandmarks: true,
             enableClassification: true,
             enableContours: true));
-    print('1');
-    //convert imageBytes into file
+
     final inputImage = InputImage.fromFile(tempFile);
-    print('2');
+
     try {
       final faces = await faceDetector.processImage(inputImage);
-      print('3');
       if (faces.isEmpty) {
-        print('No face detected');
+        Get.snackbar('Face Status ', 'No face in the image found');
         return null;
       }
-      print('4');
+
       final face = faces.first;
       final rect = face.boundingBox;
       final x = rect.left.toInt();
-      print(x);
       final y = rect.top.toInt();
-      print(y);
       final width = rect.width.toInt();
-      print(width);
       final height = rect.height.toInt();
-      print(height);
       final originalImage = img.decodeImage(imageBytes)!;
+
       img.Image cropped = img.copyCrop(
         originalImage,
         x: x,
@@ -107,7 +104,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       await tempFile.delete();
       return croppedFace;
     } catch (e) {
-      print('Error during face detection: $e');
+      Get.snackbar('Error While detecting face ', 'Please try again');
       return null;
     } finally {
       await faceDetector.close();
@@ -121,43 +118,41 @@ class _WebScreenShotsState extends State<WebScreenShots> {
           width: double.infinity,
           color: Colors.white,
           child: RepaintBoundary(
-             key: globalKey,
+            key: globalKey,
             child: Stack(
               children: [
-                
-                   WebViewWidget(
-                      controller: WebViewController()
-                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                        ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
-                        ..loadRequest(Uri.parse(
-                            'https://www.google.com/search?q=${HomeController.instance.celebrities[counter]}+face'))),
-                
+                WebViewWidget(
+                    controller: WebViewController()
+                      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                      ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
+                      ..loadRequest(Uri.parse(
+                          '${widget.url}${HomeController.instance.celebrities[counter]}'))),
                 Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
                     child: ClipRect(
-                      child: Stack(
-                        children:[ Container(
+                      child: Stack(children: [
+                        Container(
                           height: 200,
                           decoration: const BoxDecoration(
-                                color: Color.fromARGB(0, 255, 255, 255),
+                              color: Color.fromARGB(0, 255, 255, 255),
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(40.0),
                                   topRight: Radius.circular(40.0))),
                         ),
-                        Positioned.fill(child: BackdropFilter(
+                        Positioned.fill(
+                            child: BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                           child: Container(
-                            height: 200,
+                              height: 200,
                               decoration: const BoxDecoration(
                                   color: Color.fromARGB(0, 255, 255, 255),
                                   borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(40.0),
-                                      topRight: Radius.circular(40.0)))
-                          ),
+                                      topRight: Radius.circular(40.0)))),
                         ))
-                                ]),
+                      ]),
                     )),
                 Positioned(
                     bottom: 50,
@@ -174,8 +169,8 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                           borderRadius: BorderRadius.all(Radius.circular(30.0)),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  Color.fromARGB(255, 36, 36, 36), // Shadow color
+                              color: Color.fromARGB(
+                                  255, 36, 36, 36), // Shadow color
                               offset:
                                   Offset(0, 2), // Offset in x and y directions
                               blurRadius: 4, // Blur radius

@@ -14,6 +14,14 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<String> celebrities = [];
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    HomeController.instance.celebrities.clear();
+    HomeController.instance.imagesList.clear();
+  }
+
   void submitTheForm() {
     final validation = _formKey.currentState!.validate();
     if (!validation) {
@@ -22,7 +30,42 @@ class _HomePageState extends State<HomePage> {
     } else {
       _formKey.currentState!.save();
       HomeController.instance.addCeleberities(celebrities);
-      Get.to(const WebScreenShots());
+
+      //if flicker button is pressed on snackbar then this
+      //else this
+      Get.defaultDialog(
+        title: 'Choose The Platform',
+        titlePadding: EdgeInsets.all(20),
+        content: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                InkWell(
+                    onTap: () {
+                      Get.to(const WebScreenShots(
+                          url: 'https://www.flickr.com/search/?text='));
+                    },
+                    child: Container(
+                      height: 70,
+                      width: 70,
+                      child: Image.asset('assets/images/flicker.jpg'),
+                    )),
+                InkWell(
+                    onTap: () {
+                      Get.to(const WebScreenShots(
+                          url: 'https://www.google.com/search?q='));
+                    },
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      child: Image.asset('assets/images/google.png'),
+                    ))
+              ],
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -113,7 +156,8 @@ class _HomePageState extends State<HomePage> {
                       child: TextFormField(
                         validator: (value) {
                           if (value == null ||
-                              value.trim().length <= 0 || value.isEmpty) {
+                              value.trim().length <= 0 ||
+                              value.isEmpty) {
                             return '';
                           }
                           return null;
