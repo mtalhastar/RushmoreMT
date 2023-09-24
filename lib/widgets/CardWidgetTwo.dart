@@ -8,13 +8,14 @@ class CardWidgetTwo extends StatelessWidget {
   final Uint8List image2;
   final Uint8List image3;
   final Uint8List image4;
+  final String question;
 
   const CardWidgetTwo(
       {super.key,
       required this.image1,
       required this.image2,
       required this.image3,
-      required this.image4});
+      required this.image4, required this.question});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,13 @@ class CardWidgetTwo extends StatelessWidget {
             width: double.maxFinite,
           ),
         ),
+         Positioned(
+            top: 5,
+            right: 20,
+            child: Text(
+              question,
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+          )),
         Positioned(
             left: context.isPortrait
                 ? MediaQuery.of(context).size.width / 13.4

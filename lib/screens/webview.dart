@@ -23,7 +23,8 @@ import 'package:rushmore/controllers/homeController.dart';
 
 class WebScreenShots extends StatefulWidget {
   final String url;
-  const WebScreenShots({super.key, required this.url});
+  final String params;
+  const WebScreenShots({super.key, required this.url, required this.params});
 
   @override
   State<WebScreenShots> createState() => _WebScreenShotsState();
@@ -52,7 +53,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
           return;
         }
         HomeController.instance.addImages(facebytes);
-
+        
         if (counter < celebritiesLength - 1) {
           setState(() {
             counter++;
@@ -126,7 +127,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                       ..setJavaScriptMode(JavaScriptMode.unrestricted)
                       ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
                       ..loadRequest(Uri.parse(
-                          '${widget.url}${HomeController.instance.celebrities[counter]}'))),
+                          '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
                 Positioned(
                     bottom: 0,
                     left: 0,
@@ -154,6 +155,26 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                         ))
                       ]),
                     )),
+                  Positioned(
+                    bottom: 150,
+                    right: 100,
+                    left: 100,
+                    child: 
+                
+                   Container(
+                    width: double.infinity,
+                    height: 40,
+                    alignment: Alignment.center,
+                     child: Text(
+                            '${counter+1}/4',
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 245, 245, 245),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 26),
+                          ),
+                   ),
+                      
+                    ),
                 Positioned(
                     bottom: 50,
                     right: 40,

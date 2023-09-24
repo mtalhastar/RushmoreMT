@@ -6,8 +6,15 @@ class CardWidget extends StatelessWidget {
   final String image2;
   final String image3;
   final String image4;
+  final String question;
 
-  const CardWidget({super.key,required this.image1,required this.image2,required this.image3,required this.image4});
+  const CardWidget(
+      {super.key,
+      required this.image1,
+      required this.image2,
+      required this.image3,
+      required this.image4,
+      required this.question});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +28,13 @@ class CardWidget extends StatelessWidget {
             width: double.maxFinite,
           ),
         ),
+         Positioned(
+            top: 5,
+            right: 20,
+            child: Text(
+              question,
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+            )),
         Positioned(
             left: context.isPortrait
                 ? MediaQuery.of(context).size.width / 13.4
@@ -34,11 +48,10 @@ class CardWidget extends StatelessWidget {
                       ? MediaQuery.of(context).size.height / 10
                       : MediaQuery.of(context).size.height / 2.6,
                   width: MediaQuery.of(context).size.width / 5.7,
-                  decoration:  BoxDecoration(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(100)),
                     image: DecorationImage(
-                        image: AssetImage(image1),
-                        fit: BoxFit.cover),
+                        image: AssetImage(image1), fit: BoxFit.cover),
                   )),
             )),
         Positioned(
@@ -58,11 +71,10 @@ class CardWidget extends StatelessWidget {
                     ? MediaQuery.of(context).size.height / 12
                     : MediaQuery.of(context).size.height / 3,
                 width: MediaQuery.of(context).size.width / 8,
-                decoration:  BoxDecoration(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(100)),
                   image: DecorationImage(
-                      image: AssetImage(image2),
-                      fit: BoxFit.cover),
+                      image: AssetImage(image2), fit: BoxFit.cover),
                 ),
               )),
         ),
@@ -83,8 +95,7 @@ class CardWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(100)),
                   image: DecorationImage(
-                      image: AssetImage(image3),
-                      fit: BoxFit.cover),
+                      image: AssetImage(image3), fit: BoxFit.cover),
                 ),
               )),
         ),
@@ -94,22 +105,21 @@ class CardWidget extends StatelessWidget {
               ? MediaQuery.of(context).size.height / 8.5
               : MediaQuery.of(context).size.height / 2,
           child: Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(0.7),
-                child: Container(
-                  height: context.isPortrait
-                      ? MediaQuery.of(context).size.height / 11
-                      : MediaQuery.of(context).size.height / 2.4,
-                  width: MediaQuery.of(context).size.width / 5,
-                  decoration:  BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(100)),
-                    image: DecorationImage(
-                        image: AssetImage(image4),
-                        fit: BoxFit.cover),
-                  ),
-                ),
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001)
+              ..rotateY(0.7),
+            child: Container(
+              height: context.isPortrait
+                  ? MediaQuery.of(context).size.height / 11
+                  : MediaQuery.of(context).size.height / 2.4,
+              width: MediaQuery.of(context).size.width / 5,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
+                image: DecorationImage(
+                    image: AssetImage(image4), fit: BoxFit.cover),
               ),
+            ),
+          ),
         )
       ]),
     );

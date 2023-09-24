@@ -6,7 +6,8 @@ class HomeController extends GetxController {
   static HomeController instance = Get.find();
   List<String> celebrities = [];
   List<Uint8List> imagesList = [];
-
+  String questions = '';
+  
   void addCeleberities(dynamic celebritiy) {
     celebrities = celebritiy;
   }

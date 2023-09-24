@@ -42,6 +42,7 @@ class _ResultScreen extends State<ResultScreen> {
                           image2: HomeController.instance.imagesList[1],
                           image3: HomeController.instance.imagesList[2],
                           image4: HomeController.instance.imagesList[3],
+                          question: HomeController.instance.questions,
                         ),
                       ),
                       const SizedBox(
