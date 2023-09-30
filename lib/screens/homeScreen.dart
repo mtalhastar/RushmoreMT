@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rushmore/controllers/homeController.dart';
+import 'package:rushmore/screens/instructions.dart';
 import 'package:rushmore/screens/webview.dart';
 import 'package:rushmore/widgets/cardwidget.dart';
 
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> {
       //else this
       Get.defaultDialog(
         title: 'Choose The Platform',
-        titlePadding: EdgeInsets.all(20),
+        titlePadding: const EdgeInsets.all(20),
         content: Column(
           children: [
             Row(
@@ -98,16 +99,39 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(
                   height: 20,
                 ),
-                const Text(
-                  'Ask Question',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+               Stack(
+                 children:[ Container(
+                  width: double.infinity,
+                  height: 40,
+                  alignment: Alignment.center,
+                  child: const   Text(
+                      'Ask Question',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ) ,
+                 ),
+               
+                  Positioned(
+                    right: 20,
+                    child: InkWell(
+                      onTap: ()=>Get.off(Instructions()),
+                      child: Container(width: 30,height: 30,
+                      alignment: Alignment.center,
+                       decoration: const ShapeDecoration(
+                        color: Color(0xFF151515),
+                        shape: OvalBorder(),
+                      ),
+                                  
+                      child: const Icon(Icons.question_mark,color: Colors.white,),),
+                    ),
+                  )
+            ])
+                ,
+               
                 const SizedBox(
                   height: 20,
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rushmore/screens/splashScreen.dart';
+import 'package:rushmore/screens/instructions.dart';
 import 'package:get/get.dart';
 import 'package:rushmore/store/storeinitializing.dart';
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  GetMaterialApp(
-      home:GetStartedScreen(),
+      home:const GetStartedScreen(),
       initialBinding: StoreBinding(),
     );
   }

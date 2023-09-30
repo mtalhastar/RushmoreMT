@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rushmore/controllers/homeController.dart';
 import 'package:rushmore/screens/homeScreen.dart';
+import 'package:rushmore/screens/instructions.dart';
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
@@ -54,7 +55,7 @@ class GetStartedScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    Get.off(const HomePage(),
+                    Get.off(const Instructions(),
                         transition: Transition.fade,
                         duration: const Duration(milliseconds: 500));
                   },

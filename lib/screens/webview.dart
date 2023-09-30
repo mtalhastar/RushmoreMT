@@ -166,7 +166,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                     height: 40,
                     alignment: Alignment.center,
                      child: Text(
-                            '${counter+1}/4',
+                            '${counter}/4',
                             style: const TextStyle(
                                 color: Color.fromARGB(255, 245, 245, 245),
                                 fontWeight: FontWeight.bold,
