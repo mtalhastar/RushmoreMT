@@ -17,7 +17,7 @@ class Instructions extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(
-                height: 20,
+                height: 40,
               ),
               const SizedBox(
                 width: double.infinity,
