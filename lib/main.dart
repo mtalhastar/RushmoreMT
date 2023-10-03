@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rushmore/screens/splashScreen.dart';
-import 'package:rushmore/screens/instructions.dart';
 import 'package:get/get.dart';
 import 'package:rushmore/store/storeinitializing.dart';
 

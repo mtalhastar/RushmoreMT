@@ -55,7 +55,7 @@ class GetStartedScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    Get.off(const Instructions(),
+                    Get.off( Instructions(),
                         transition: Transition.fade,
                         duration: const Duration(milliseconds: 500));
                   },

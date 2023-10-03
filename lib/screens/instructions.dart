@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rushmore/screens/homeScreen.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 class Instructions extends StatelessWidget {
-  const Instructions({super.key});
-
+   Instructions({super.key});
+   final Uri uri = Uri.parse('https://youtu.be/pLF8bNamkmg?si=e_ELp3qgNJyMsGPV');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -235,7 +235,29 @@ class Instructions extends StatelessWidget {
                 ],
               ),
               const SizedBox(
-                height: 40,
+                height: 20,
+              ),
+              const Text('To Watch Video Tutorial of using the App Press the icon below',
+              textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,)),
+              const SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                  onTap: () async {
+                  
+                   if (!await launchUrl(uri)) {
+                      Get.snackbar('Cannot Lauunch','Url changed');
+                    }
+                  },
+                  child: Card(
+                    child: Image.asset(
+                      'assets/images/youtube.png',
+                      width: 80,
+                      height: 80,
+                                ),
+                  )),
+              const SizedBox(
+                height: 20,
               ),
               InkWell(
                 onTap: () => Get.off(const HomePage()),
