@@ -90,21 +90,21 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const CardWidget(
-                  image1: 'assets/images/ronaldoimage.png',
-                  image2: 'assets/images/messi.png',
-                  image3: 'assets/images/pele.png',
-                  image4: 'assets/images/zlatin.png',
+                  image1: 'assets/images/marvinGaye.jpg',
+                  image2: 'assets/images/georgeWashington.png',
+                  image3: 'assets/images/AbrahimLincolen.png',
+                  image4: 'assets/images/thoedoreroswelt.png',
                   question: 'Who`s on your mount rushmore?',
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-               Stack(
-                 children:[ Container(
-                  width: double.infinity,
-                  height: 40,
-                  alignment: Alignment.center,
-                  child: const   Text(
+                Stack(children: [
+                  Container(
+                    width: double.infinity,
+                    height: 40,
+                    alignment: Alignment.center,
+                    child: const Text(
                       'Ask Question',
                       style: TextStyle(
                         color: Colors.black,
@@ -112,26 +112,28 @@ class _HomePageState extends State<HomePage> {
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w800,
                       ),
-                    ) ,
-                 ),
-               
+                    ),
+                  ),
                   Positioned(
                     right: 20,
                     child: InkWell(
-                      onTap: ()=>Get.off(Instructions()),
-                      child: Container(width: 30,height: 30,
-                      alignment: Alignment.center,
-                       decoration: const ShapeDecoration(
-                        color: Color(0xFF151515),
-                        shape: OvalBorder(),
+                      onTap: () => Get.off(Instructions()),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        alignment: Alignment.center,
+                        decoration: const ShapeDecoration(
+                          color: Color(0xFF151515),
+                          shape: OvalBorder(),
+                        ),
+                        child: const Icon(
+                          Icons.question_mark,
+                          color: Colors.white,
+                        ),
                       ),
-                                  
-                      child: const Icon(Icons.question_mark,color: Colors.white,),),
                     ),
                   )
-            ])
-                ,
-               
+                ]),
                 const SizedBox(
                   height: 20,
                 ),
