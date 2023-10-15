@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rushmore/controllers/homeController.dart';
 import 'package:rushmore/screens/homeScreen.dart';
@@ -21,11 +22,39 @@ class ResultScreen extends StatefulWidget {
 class _ResultScreen extends State<ResultScreen> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? capturedImageBytes;
+  late BannerAd _bannerAd;
+  bool isAdloaded = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _initBannerAds();
+  }
+
+  _initBannerAds() {
+    _bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: 'ca-app-pub-5791251748470780/4069777998',
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            setState(() {
+              isAdloaded = true;
+            });
+          },
+          onAdFailedToLoad: (ad, error) {
+            _bannerAd.dispose();
+          },
+        ),
+        request: const AdRequest());
+    _bannerAd.load();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-          children:[ Container(
+        body: Stack(children: [
+          Container(
               height: double.maxFinite,
               color: Colors.white,
               child: SingleChildScrollView(
@@ -88,19 +117,19 @@ class _ResultScreen extends State<ResultScreen> {
                                 capturedImageBytes =
                                     byteData.buffer.asUint8List();
                               }
-                                // Get the temporary directory path
-                                Directory tempDir = await getTemporaryDirectory();
-                                String tempPath = tempDir.path;
-        
-                                // Create a file in the temporary directory with a unique name
-                                String filePath = '$tempPath/mount_rushmore.png';
-                                File file = File(filePath);
-                                await file.writeAsBytes(capturedImageBytes!);
-                                XFile xFile = XFile(filePath);
-        
-                                await Share.shareXFiles([xFile],
-                                    text: 'Check out my Mount Rushmore!');
-                              },
+                              // Get the temporary directory path
+                              Directory tempDir = await getTemporaryDirectory();
+                              String tempPath = tempDir.path;
+
+                              // Create a file in the temporary directory with a unique name
+                              String filePath = '$tempPath/mount_rushmore.png';
+                              File file = File(filePath);
+                              await file.writeAsBytes(capturedImageBytes!);
+                              XFile xFile = XFile(filePath);
+
+                              await Share.shareXFiles([xFile],
+                                  text: 'Check out my Mount Rushmore!');
+                            },
                             child: Container(
                                 width: 284,
                                 height: 57,
@@ -164,9 +193,13 @@ class _ResultScreen extends State<ResultScreen> {
                               )),
                         ),
                       ]))),
-          
-        
-        
-        ]));
+        ]),
+        bottomNavigationBar: isAdloaded
+            ? Container(
+                height: _bannerAd.size.height.toDouble(),
+                width: _bannerAd.size.width.toDouble(),
+                child: AdWidget(ad: _bannerAd),
+              )
+            : const SizedBox());
   }
 }
