@@ -194,12 +194,11 @@ class _ResultScreen extends State<ResultScreen> {
                         ),
                       ]))),
         ]),
-        bottomNavigationBar: isAdloaded
-            ? Container(
-                height: _bannerAd.size.height.toDouble(),
-                width: _bannerAd.size.width.toDouble(),
-                child: AdWidget(ad: _bannerAd),
-              )
-            : const SizedBox());
+        bottomNavigationBar: Container(
+          height: _bannerAd.size.height.toDouble(),
+          width: _bannerAd.size.width.toDouble(),
+          child: AdWidget(ad: _bannerAd),
+        ));
+    // : const SizedBox());
   }
 }

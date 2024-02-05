@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rushmore/controllers/homeController.dart';
 
 class CardWidgetTwo extends StatelessWidget {
   final Uint8List image1;
@@ -55,6 +56,15 @@ class CardWidgetTwo extends StatelessWidget {
                         image: MemoryImage(image1), fit: BoxFit.cover),
                   )),
             )),
+            Positioned(
+              left: context.isPortrait
+                ? MediaQuery.of(context).size.width / 8
+                : MediaQuery.of(context).size.width / 8,
+            top: context.isPortrait
+                ? MediaQuery.of(context).size.height / 8
+                : MediaQuery.of(context).size.height / 2,
+              
+              child: Card(child: Text(HomeController.instance.celebrities[0],style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0),fontWeight: FontWeight.bold),))),
         Positioned(
           left: context.isPortrait
               ? MediaQuery.of(context).size.width / 3.3
@@ -79,6 +89,15 @@ class CardWidgetTwo extends StatelessWidget {
                 ),
               )),
         ),
+            Positioned(
+              left: context.isPortrait
+                ? MediaQuery.of(context).size.width / 3
+                : MediaQuery.of(context).size.width / 2.7,
+            top: context.isPortrait
+                ? MediaQuery.of(context).size.height / 6.5
+                : MediaQuery.of(context).size.height / 1.5,
+              
+              child: Card(child: Text(HomeController.instance.celebrities[1],style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0),fontWeight: FontWeight.bold),))),
         Positioned(
           left: MediaQuery.of(context).size.width / 2.06,
           top: context.isPortrait
@@ -100,6 +119,15 @@ class CardWidgetTwo extends StatelessWidget {
                 ),
               )),
         ),
+         Positioned(
+              left: context.isPortrait
+                ? MediaQuery.of(context).size.width / 2.06
+                : MediaQuery.of(context).size.width / 2,
+            top: context.isPortrait
+                ? MediaQuery.of(context).size.height / 4.5
+                : MediaQuery.of(context).size.height / 1,
+              
+              child: Card(child: Text(HomeController.instance.celebrities[2],style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0),fontWeight: FontWeight.bold),))),
         Positioned(
           right: MediaQuery.of(context).size.width / 16,
           top: context.isPortrait
@@ -121,7 +149,16 @@ class CardWidgetTwo extends StatelessWidget {
                   ),
                 ),
               ),
-        )
+        ),
+            Positioned(
+              left: context.isPortrait
+                ? MediaQuery.of(context).size.width / 1.4
+                : MediaQuery.of(context).size.width / 1.3,
+            top: context.isPortrait
+                ? MediaQuery.of(context).size.height / 4.5
+                : MediaQuery.of(context).size.height / 1,
+              
+              child: Card(child: Text(HomeController.instance.celebrities[3],style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0),fontWeight: FontWeight.bold),))),
       ]),
     );
   }
