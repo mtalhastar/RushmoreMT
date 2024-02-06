@@ -43,25 +43,23 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     ui.Image image = await boundary.toImage(pixelRatio: 3.0);
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     if (byteData != null) {
-      setState(() async {
-        capturedImageBytes = byteData.buffer.asUint8List();
-        final facebytes = await detectAndCropSingleFace(capturedImageBytes!);
-        if (facebytes == null) {
-          HomeController.instance.imagesList.clear();
-          HomeController.instance.celebrities.clear();
-          Get.off(const HomePage(), transition: Transition.fade);
-          return;
-        }
-        HomeController.instance.addImages(facebytes);
-        
-        if (counter < celebritiesLength - 1) {
-          setState(() {
-            counter++;
-          });
-        } else {
-          Get.off(const ResultScreen());
-        }
-      });
+      final capturedBytes = byteData.buffer.asUint8List();
+      final facebytes = await detectAndCropSingleFace(capturedBytes);
+      if (facebytes == null) {
+        HomeController.instance.imagesList.clear();
+        HomeController.instance.celebrities.clear();
+        Get.off(const HomePage(), transition: Transition.fade);
+        return;
+      }
+      HomeController.instance.addImages(facebytes);
+
+      if (counter < celebritiesLength - 1) {
+        setState(() {
+          counter++;
+        });
+      } else {
+        Get.off(const ResultScreen());
+      }
     }
   }
 
@@ -155,26 +153,23 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                         ))
                       ]),
                     )),
-                  Positioned(
-                    bottom: 150,
-                    right: 100,
-                    left: 100,
-                    child: 
-                
-                   Container(
+                Positioned(
+                  bottom: 150,
+                  right: 100,
+                  left: 100,
+                  child: Container(
                     width: double.infinity,
                     height: 40,
                     alignment: Alignment.center,
-                     child: Text(
-                            '${counter}/4',
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 245, 245, 245),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 26),
-                          ),
-                   ),
-                      
+                    child: Text(
+                      '${counter}/4',
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 245, 245, 245),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26),
                     ),
+                  ),
+                ),
                 Positioned(
                     bottom: 50,
                     right: 40,

@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rushmore/controllers/homeController.dart';
 import 'package:rushmore/screens/homeScreen.dart';
@@ -22,33 +21,33 @@ class ResultScreen extends StatefulWidget {
 class _ResultScreen extends State<ResultScreen> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? capturedImageBytes;
-  late BannerAd _bannerAd;
+  // late BannerAd _bannerAd;
   bool isAdloaded = false;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _initBannerAds();
-  }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   _initBannerAds();
+  // }
 
-  _initBannerAds() {
-    _bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: 'ca-app-pub-5791251748470780/4069777998',
-        listener: BannerAdListener(
-          onAdLoaded: (ad) {
-            setState(() {
-              isAdloaded = true;
-            });
-          },
-          onAdFailedToLoad: (ad, error) {
-            _bannerAd.dispose();
-          },
-        ),
-        request: const AdRequest());
-    _bannerAd.load();
-  }
+  // _initBannerAds() {
+  //   _bannerAd = BannerAd(
+  //       size: AdSize.banner,
+  //       adUnitId: 'ca-app-pub-5791251748470780/4069777998',
+  //       listener: BannerAdListener(
+  //         onAdLoaded: (ad) {
+  //           setState(() {
+  //             isAdloaded = true;
+  //           });
+  //         },
+  //         onAdFailedToLoad: (ad, error) {
+  //           _bannerAd.dispose();
+  //         },
+  //       ),
+  //       request: const AdRequest());
+  //   _bannerAd.load();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -194,11 +193,12 @@ class _ResultScreen extends State<ResultScreen> {
                         ),
                       ]))),
         ]),
-        bottomNavigationBar: Container(
-          height: _bannerAd.size.height.toDouble(),
-          width: _bannerAd.size.width.toDouble(),
-          child: AdWidget(ad: _bannerAd),
-        ));
+        // bottomNavigationBar: Container(
+        //   height: _bannerAd.size.height.toDouble(),
+        //   width: _bannerAd.size.width.toDouble(),
+        //   child: AdWidget(ad: _bannerAd),
+        // )
+        );
     // : const SizedBox());
   }
 }
