@@ -9,6 +9,7 @@ import 'dart:ui';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -18,6 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rushmore/screens/homeScreen.dart';
 import 'package:rushmore/screens/resultPage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:rushmore/controllers/homeController.dart';
 // Import for Android features.
 
@@ -37,14 +39,17 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? capturedImageBytes;
 
-  Future<void> captureScreenshot() async {
-    RenderRepaintBoundary boundary =
-        globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-    ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+   Future<void> captureScreenshot() async {
+    RenderRepaintBoundary boundary = globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    ui.Image image = await boundary.toImage();
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    
     if (byteData != null) {
-      final capturedBytes = byteData.buffer.asUint8List();
-      final facebytes = await detectAndCropSingleFace(capturedBytes);
+      final tempDir = await getApplicationDocumentsDirectory();
+      final tempFilePath = '${tempDir.path}/temp_image.png';
+      final file = await File(tempFilePath).writeAsBytes(byteData.buffer.asUint8List());
+
+      final facebytes = await detectAndCropSingleFace(file);
       if (facebytes == null) {
         HomeController.instance.imagesList.clear();
         HomeController.instance.celebrities.clear();
@@ -63,53 +68,77 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     }
   }
 
-  Future<Uint8List?> detectAndCropSingleFace(Uint8List imageBytes) async {
-    final tempDir = await getTemporaryDirectory();
-    final tempFile = File('${tempDir.path}/temp_image.jpg');
-    await tempFile.writeAsBytes(imageBytes);
-    final faceDetector = FaceDetector(
-        options: FaceDetectorOptions(
-            enableTracking: true,
-            enableLandmarks: true,
-            enableClassification: true,
-            enableContours: true));
+//   Future<void> captureScreenshot() async {
+//   Uint8List? imageBytes = await Screenshot.capture();
+  
+//   if (imageBytes != null) {
+//     final tempDir = await getApplicationDocumentsDirectory();
+//     final tempFilePath = '${tempDir.path}/temp_image.png';
+//     final file = await File(tempFilePath).writeAsBytes(imageBytes);
 
-    final inputImage = InputImage.fromFile(tempFile);
+//     final facebytes = await detectAndCropSingleFace(file);
+//     if (facebytes == null) {
+//       HomeController.instance.imagesList.clear();
+//       HomeController.instance.celebrities.clear();
+//       Get.off(const HomePage(), transition: Transition.fade);
+//       return;
+//     }
+//     HomeController.instance.addImages(facebytes);
 
-    try {
-      final faces = await faceDetector.processImage(inputImage);
-      if (faces.isEmpty) {
-        Get.snackbar('Face Status ', 'No face in the image found');
-        return null;
-      }
+//     if (counter < celebritiesLength - 1) {
+//       setState(() {
+//         counter++;
+//       });
+//     } else {
+//       Get.off(const ResultScreen());
+//     }
+//   }
+// }
 
-      final face = faces.first;
-      final rect = face.boundingBox;
-      final x = rect.left.toInt();
-      final y = rect.top.toInt();
-      final width = rect.width.toInt();
-      final height = rect.height.toInt();
-      final originalImage = img.decodeImage(imageBytes)!;
 
-      img.Image cropped = img.copyCrop(
-        originalImage,
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-      );
-      final croppedImageBytes = img.encodeJpg(cropped);
-      final croppedFace = Uint8List.fromList(croppedImageBytes);
-      await tempFile.delete();
-      return croppedFace;
-    } catch (e) {
-      Get.snackbar('Error While detecting face ', 'Please try again');
+ Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
+  final tempFile = File(imageFile.path);
+  final faceDetector = FaceDetector(
+      options: FaceDetectorOptions(
+          enableTracking: true,
+          enableLandmarks: true,
+          enableClassification: true,
+          enableContours: true));
+
+  final inputImage = InputImage.fromFile(tempFile);
+  try {
+    final faces = await faceDetector.processImage(inputImage);
+    if (faces.isEmpty) {
+      Get.snackbar('Face Status ', 'No face in the image found');
       return null;
-    } finally {
-      await faceDetector.close();
     }
-  }
 
+    final face = faces.first;
+    final rect = face.boundingBox;
+    final x = rect.left.toInt();
+    final y = rect.top.toInt();
+    final width = rect.width.toInt();
+    final height = rect.height.toInt();
+    final originalImage = img.decodeImage(tempFile.readAsBytesSync())!;
+
+    img.Image cropped = img.copyCrop(
+      originalImage,
+      x: x,
+      y: y,
+      width: width,
+      height: height,
+    );
+    final croppedImageBytes = img.encodeJpg(cropped);
+    final croppedFace = Uint8List.fromList(croppedImageBytes);
+    await tempFile.delete();
+    return croppedFace;
+  } catch (e) {
+    Get.snackbar('Error While detecting face ', 'Please try again');
+    return null;
+  } finally {
+    await faceDetector.close();
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
