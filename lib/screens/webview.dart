@@ -75,13 +75,12 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   // }
 
   Future<void> captureScreenshot() async {
-    Uint8List? imageBytes;
+    late Uint8List? imageBytes;
     await screenshotController.capture().then((Uint8List? image) {
       //Capture Done
-   
-        imageBytes = image;
-        print(image);
-   
+
+      imageBytes = image;
+      print(image);
     }).catchError((onError) {
       print(onError);
     });
@@ -167,7 +166,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                 WebViewWidget(
                     controller: WebViewController()
                       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                      ..setBackgroundColor(Color.fromARGB(0, 249, 249, 249))
+                      ..setBackgroundColor(const Color.fromARGB(0, 249, 249, 249))
                       ..loadRequest(Uri.parse(
                           '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
                 Positioned(
@@ -219,7 +218,9 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                     right: 40,
                     left: 40,
                     child: InkWell(
-                      onTap: captureScreenshot,
+                      onTap: () async {
+                        await captureScreenshot();
+                      },
                       child: Container(
                         height: 60,
                         padding: const EdgeInsets.symmetric(horizontal: 20),
