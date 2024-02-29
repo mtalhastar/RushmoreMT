@@ -77,16 +77,14 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   Future<void> captureScreenshot() async {
     late Uint8List? imageBytes;
     await screenshotController.capture().then((Uint8List? image) {
-      //Capture Done
-
       imageBytes = image;
-      print(image);
+      print(image.toString());
     }).catchError((onError) {
       print(onError);
     });
 
     if (imageBytes != null) {
-      final tempDir = await getApplicationDocumentsDirectory();
+      final tempDir = await getTemporaryDirectory();
       final tempFilePath = '${tempDir.path}/temp_image.png';
       final file = await File(tempFilePath).writeAsBytes(imageBytes!);
 
@@ -110,7 +108,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   }
 
   Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
-    final tempFile = File(imageFile.path);
+   
     final faceDetector = FaceDetector(
         options: FaceDetectorOptions(
             enableTracking: true,
@@ -118,7 +116,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
             enableClassification: true,
             enableContours: true));
 
-    final inputImage = InputImage.fromFile(tempFile);
+    final inputImage = InputImage.fromFile(imageFile);
     try {
       final faces = await faceDetector.processImage(inputImage);
       if (faces.isEmpty) {
@@ -132,7 +130,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       final y = rect.top.toInt();
       final width = rect.width.toInt();
       final height = rect.height.toInt();
-      final originalImage = img.decodeImage(tempFile.readAsBytesSync())!;
+      final originalImage = img.decodeImage(imageFile.readAsBytesSync())!;
 
       img.Image cropped = img.copyCrop(
         originalImage,
@@ -143,7 +141,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       );
       final croppedImageBytes = img.encodeJpg(cropped);
       final croppedFace = Uint8List.fromList(croppedImageBytes);
-      await tempFile.delete();
+      await imageFile.delete();
       return croppedFace;
     } catch (e) {
       Get.snackbar('Error While detecting face ', 'Please try again');
