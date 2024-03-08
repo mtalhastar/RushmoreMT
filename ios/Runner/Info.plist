@@ -46,6 +46,10 @@
         <string>sms</string>
         <string>tel</string>
     </array>
+	<key>NSCameraUsageDescription</key>
+    <string>Your app needs access to the camera for capturing images.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Your app needs access to the photo library for processing images.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>

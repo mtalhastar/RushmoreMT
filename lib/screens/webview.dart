@@ -86,29 +86,35 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     if (imageBytes != null) {
       final tempDir = await getTemporaryDirectory();
       final tempFilePath = '${tempDir.path}/temp_image.png';
-      final file = await File(tempFilePath).writeAsBytes(imageBytes!);
+      final file = File(tempFilePath);
+      await file.writeAsBytes(imageBytes!);
+      print('filepath ${file.path}');
+      if (await file.exists()) {
+        final facebytes = await detectAndCropSingleFace(file);
+        if (facebytes == null) {
+          HomeController.instance.imagesList.clear();
+          HomeController.instance.celebrities.clear();
+          Get.off(const HomePage(), transition: Transition.fade);
+          return;
+        }
+        HomeController.instance.addImages(facebytes);
 
-      final facebytes = await detectAndCropSingleFace(file);
-      if (facebytes == null) {
-        HomeController.instance.imagesList.clear();
-        HomeController.instance.celebrities.clear();
-        Get.off(const HomePage(), transition: Transition.fade);
-        return;
-      }
-      HomeController.instance.addImages(facebytes);
-
-      if (counter < celebritiesLength - 1) {
-        setState(() {
-          counter++;
-        });
+        if (counter < celebritiesLength - 1) {
+          setState(() {
+            counter++;
+          });
+        } else {
+          Get.off(const ResultScreen());
+        }
       } else {
-        Get.off(const ResultScreen());
+        print('File does not exist');
       }
+    } else {
+      print('imagebytes are null');
     }
   }
 
   Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
-   
     final faceDetector = FaceDetector(
         options: FaceDetectorOptions(
             enableTracking: true,
@@ -117,6 +123,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
             enableContours: true));
 
     final inputImage = InputImage.fromFile(imageFile);
+    
     try {
       final faces = await faceDetector.processImage(inputImage);
       if (faces.isEmpty) {
@@ -157,16 +164,18 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       body: Container(
           width: double.infinity,
           color: Colors.white,
-          child: Screenshot(
-            controller: screenshotController,
-            child: Stack(
+          child:  Stack(
               children: [
-                WebViewWidget(
-                    controller: WebViewController()
-                      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                      ..setBackgroundColor(const Color.fromARGB(0, 249, 249, 249))
-                      ..loadRequest(Uri.parse(
-                          '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
+                Screenshot(
+                  controller: screenshotController,
+                  child: WebViewWidget(
+                      controller: WebViewController()
+                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                        ..setBackgroundColor(
+                            const Color.fromARGB(0, 249, 249, 249))
+                        ..loadRequest(Uri.parse(
+                            '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
+                ),
                 Positioned(
                     bottom: 0,
                     left: 0,
@@ -248,7 +257,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                     ))
               ],
             ),
-          )),
+          ),
     );
   }
 }
