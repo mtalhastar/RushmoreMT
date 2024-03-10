@@ -84,7 +84,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     });
 
     if (imageBytes != null) {
-      final tempDir = await getTemporaryDirectory();
+      final tempDir = await getApplicationCacheDirectory();
       final tempFilePath = '${tempDir.path}/temp_image.png';
       final file = File(tempFilePath);
       await file.writeAsBytes(imageBytes!);
@@ -122,7 +122,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
             enableClassification: true,
             enableContours: true));
 
-    final inputImage = InputImage.fromFile(imageFile);
+    final inputImage = InputImage.fromFilePath(imageFile.path);
     
     try {
       final faces = await faceDetector.processImage(inputImage);
