@@ -16,6 +16,7 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rushmore/screens/dialog.dart';
 import 'package:rushmore/screens/homeScreen.dart';
 import 'package:rushmore/screens/resultPage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -39,7 +40,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? capturedImageBytes;
   ScreenshotController screenshotController = ScreenshotController();
-
+  late Uint8List? imageBytes;
   @override
   void initState() {
     // TODO: implement initState
@@ -74,56 +75,64 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   //   }
   // }
 
-  Future<void> captureScreenshot() async {
-    late Uint8List? imageBytes;
+  Future<void> captureScreenshot(BuildContext context) async {
     await screenshotController.capture().then((Uint8List? image) {
       imageBytes = image;
+      setState(() {});
+      if (imageBytes != null) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return DisplayCapturedImageDialog(imageBytes: imageBytes);
+          },
+        );
+      }
       print(image.toString());
     }).catchError((onError) {
       print(onError);
     });
 
-    if (imageBytes != null) {
-      final tempDir = await getApplicationCacheDirectory();
-      final tempFilePath = '${tempDir.path}/temp_image.png';
-      final file = File(tempFilePath);
-      await file.writeAsBytes(imageBytes!);
-      print('filepath ${file.path}');
-      if (await file.exists()) {
-        final facebytes = await detectAndCropSingleFace(file);
-        if (facebytes == null) {
-          HomeController.instance.imagesList.clear();
-          HomeController.instance.celebrities.clear();
-          Get.off(const HomePage(), transition: Transition.fade);
-          return;
-        }
-        HomeController.instance.addImages(facebytes);
+    // if (imageBytes != null) {
+    //   final tempDir = await getApplicationCacheDirectory();
+    //   final tempFilePath = '${tempDir.path}/temp_image.png';
+    //   final file = File(tempFilePath);
+    //   await file.writeAsBytes(imageBytes!);
+    //   print('filepath ${file.path}');
 
-        if (counter < celebritiesLength - 1) {
-          setState(() {
-            counter++;
-          });
-        } else {
-          Get.off(const ResultScreen());
-        }
-      } else {
-        print('File does not exist');
-      }
-    } else {
-      print('imagebytes are null');
-    }
+    //   if (await file.exists()) {
+    //     final facebytes = await detectAndCropSingleFace(file);
+    //     if (facebytes == null) {
+    //       HomeController.instance.imagesList.clear();
+    //       HomeController.instance.celebrities.clear();
+    //       Get.off(const HomePage(), transition: Transition.fade);
+    //       return;
+    //     }
+    //     HomeController.instance.addImages(facebytes);
+
+    //     if (counter < celebritiesLength - 1) {
+    //       setState(() {
+    //         counter++;
+    //       });
+    //     } else {
+    //       Get.off(const ResultScreen());
+    //     }
+    //   } else {
+    //     print('File does not exist');
+    //   }
+    // } else {
+    //   print('imagebytes are null');
+    // }
   }
 
   Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
     final faceDetector = FaceDetector(
         options: FaceDetectorOptions(
             enableTracking: true,
-            enableLandmarks: true,
             enableClassification: true,
             enableContours: true));
 
     final inputImage = InputImage.fromFilePath(imageFile.path);
-    
+
     try {
       final faces = await faceDetector.processImage(inputImage);
       if (faces.isEmpty) {
@@ -162,102 +171,100 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          width: double.infinity,
-          color: Colors.white,
-          child:  Stack(
-              children: [
-                Screenshot(
-                  controller: screenshotController,
-                  child: WebViewWidget(
-                      controller: WebViewController()
-                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                        ..setBackgroundColor(
-                            const Color.fromARGB(0, 249, 249, 249))
-                        ..loadRequest(Uri.parse(
-                            '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
-                ),
-                Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: ClipRect(
-                      child: Stack(children: [
-                        Container(
+        width: double.infinity,
+        color: Colors.white,
+        child: Stack(
+          children: [
+            Screenshot(
+              controller: screenshotController,
+              child: WebViewWidget(
+                  controller: WebViewController()
+                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    ..setBackgroundColor(const Color.fromARGB(0, 249, 249, 249))
+                    ..loadRequest(Uri.parse(
+                        '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
+            ),
+            Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: ClipRect(
+                  child: Stack(children: [
+                    Container(
+                      height: 200,
+                      decoration: const BoxDecoration(
+                          color: Color.fromARGB(0, 255, 255, 255),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(40.0),
+                              topRight: Radius.circular(40.0))),
+                    ),
+                    Positioned.fill(
+                        child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: Container(
                           height: 200,
                           decoration: const BoxDecoration(
                               color: Color.fromARGB(0, 255, 255, 255),
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(40.0),
-                                  topRight: Radius.circular(40.0))),
-                        ),
-                        Positioned.fill(
-                            child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                          child: Container(
-                              height: 200,
-                              decoration: const BoxDecoration(
-                                  color: Color.fromARGB(0, 255, 255, 255),
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(40.0),
-                                      topRight: Radius.circular(40.0)))),
-                        ))
-                      ]),
-                    )),
-                Positioned(
-                  bottom: 150,
-                  right: 100,
-                  left: 100,
+                                  topRight: Radius.circular(40.0)))),
+                    ))
+                  ]),
+                )),
+            Positioned(
+              bottom: 150,
+              right: 100,
+              left: 100,
+              child: Container(
+                width: double.infinity,
+                height: 40,
+                alignment: Alignment.center,
+                child: Text(
+                  '${counter}/4',
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 245, 245, 245),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 26),
+                ),
+              ),
+            ),
+            Positioned(
+                bottom: 50,
+                right: 40,
+                left: 40,
+                child: InkWell(
+                  onTap: () async {
+                    await captureScreenshot(context);
+                  },
                   child: Container(
-                    width: double.infinity,
-                    height: 40,
+                    height: 60,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     alignment: Alignment.center,
-                    child: Text(
-                      '${counter}/4',
-                      style: const TextStyle(
-                          color: Color.fromARGB(255, 245, 245, 245),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              Color.fromARGB(255, 36, 36, 36), // Shadow color
+                          offset: Offset(0, 2), // Offset in x and y directions
+                          blurRadius: 4, // Blur radius
+                          spreadRadius: 0, // Spread radius
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      'Process Image',
+                      style: TextStyle(
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 26),
+                          fontSize: 20),
                     ),
                   ),
-                ),
-                Positioned(
-                    bottom: 50,
-                    right: 40,
-                    left: 40,
-                    child: InkWell(
-                      onTap: () async {
-                        await captureScreenshot();
-                      },
-                      child: Container(
-                        height: 60,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromARGB(
-                                  255, 36, 36, 36), // Shadow color
-                              offset:
-                                  Offset(0, 2), // Offset in x and y directions
-                              blurRadius: 4, // Blur radius
-                              spreadRadius: 0, // Spread radius
-                            ),
-                          ],
-                        ),
-                        child: const Text(
-                          'Process Image',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        ),
-                      ),
-                    ))
-              ],
-            ),
-          ),
+                ))
+          ],
+        ),
+      ),
     );
   }
 }
