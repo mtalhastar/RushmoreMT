@@ -92,36 +92,36 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       print(onError);
     });
 
-    // if (imageBytes != null) {
-    //   final tempDir = await getApplicationCacheDirectory();
-    //   final tempFilePath = '${tempDir.path}/temp_image.png';
-    //   final file = File(tempFilePath);
-    //   await file.writeAsBytes(imageBytes!);
-    //   print('filepath ${file.path}');
+    if (imageBytes != null) {
+      final tempDir = await getApplicationCacheDirectory();
+      final tempFilePath = '${tempDir.path}/temp_image.png';
+      final file = await File(tempFilePath).create();
+      await file.writeAsBytes(imageBytes!);
+      print('filepath ${file.path}');
 
-    //   if (await file.exists()) {
-    //     final facebytes = await detectAndCropSingleFace(file);
-    //     if (facebytes == null) {
-    //       HomeController.instance.imagesList.clear();
-    //       HomeController.instance.celebrities.clear();
-    //       Get.off(const HomePage(), transition: Transition.fade);
-    //       return;
-    //     }
-    //     HomeController.instance.addImages(facebytes);
+      if (await file.exists()) {
+        final facebytes = await detectAndCropSingleFace(file);
+        if (facebytes == null) {
+          HomeController.instance.imagesList.clear();
+          HomeController.instance.celebrities.clear();
+          Get.off(const HomePage(), transition: Transition.fade);
+          return;
+        }
+        HomeController.instance.addImages(facebytes);
 
-    //     if (counter < celebritiesLength - 1) {
-    //       setState(() {
-    //         counter++;
-    //       });
-    //     } else {
-    //       Get.off(const ResultScreen());
-    //     }
-    //   } else {
-    //     print('File does not exist');
-    //   }
-    // } else {
-    //   print('imagebytes are null');
-    // }
+        if (counter < celebritiesLength - 1) {
+          setState(() {
+            counter++;
+          });
+        } else {
+          Get.off(const ResultScreen());
+        }
+      } else {
+        print('File does not exist');
+      }
+    } else {
+      print('imagebytes are null');
+    }
   }
 
   Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
