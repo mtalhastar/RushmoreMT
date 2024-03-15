@@ -76,9 +76,10 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   // }
 
   Future<void> captureScreenshot(BuildContext context) async {
-    await screenshotController.capture().then((Uint8List? image) {
-      imageBytes = image;
-      setState(() {});
+    await screenshotController.capture(delay:const Duration(seconds: 5)).then((Uint8List? image) {
+      setState(() {
+       imageBytes = image;
+      });
       if (imageBytes != null) {
         showDialog(
           context: context,
@@ -91,37 +92,38 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     }).catchError((onError) {
       print(onError);
     });
+   
 
-    if (imageBytes != null) {
-      final tempDir = await getApplicationCacheDirectory();
-      final tempFilePath = '${tempDir.path}/temp_image.png';
-      final file = await File(tempFilePath).create();
-      await file.writeAsBytes(imageBytes!);
-      print('filepath ${file.path}');
+    // if (imageBytes != null) {
+    //   final tempDir = await getApplicationCacheDirectory();
+    //   final tempFilePath = '${tempDir.path}/temp_image.png';
+    //   final file = await File(tempFilePath).create();
+    //   await file.writeAsBytes(imageBytes!);
+    //   print('filepath ${file.path}');
 
-      if (await file.exists()) {
-        final facebytes = await detectAndCropSingleFace(file);
-        if (facebytes == null) {
-          HomeController.instance.imagesList.clear();
-          HomeController.instance.celebrities.clear();
-          Get.off(const HomePage(), transition: Transition.fade);
-          return;
-        }
-        HomeController.instance.addImages(facebytes);
+    //   if (await file.exists()) {
+    //     final facebytes = await detectAndCropSingleFace(file);
+    //     if (facebytes == null) {
+    //       HomeController.instance.imagesList.clear();
+    //       HomeController.instance.celebrities.clear();
+    //       Get.off(const HomePage(), transition: Transition.fade);
+    //       return;
+    //     }
+    //     HomeController.instance.addImages(facebytes);
 
-        if (counter < celebritiesLength - 1) {
-          setState(() {
-            counter++;
-          });
-        } else {
-          Get.off(const ResultScreen());
-        }
-      } else {
-        print('File does not exist');
-      }
-    } else {
-      print('imagebytes are null');
-    }
+    //     if (counter < celebritiesLength - 1) {
+    //       setState(() {
+    //         counter++;
+    //       });
+    //     } else {
+    //       Get.off(const ResultScreen());
+    //     }
+    //   } else {
+    //     print('File does not exist');
+    //   }
+    // } else {
+    //   print('imagebytes are null');
+    // }
   }
 
   Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
