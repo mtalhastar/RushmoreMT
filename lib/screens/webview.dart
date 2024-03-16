@@ -83,50 +83,49 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       setState(() {
         imageBytes = image;
       });
-      if (imageBytes != null) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return DisplayCapturedImageDialog(imageBytes: imageBytes);
-          },
-        );
-      }
       print(image.toString());
     }).catchError((onError) {
       print(onError);
     });
 
-    // if (imageBytes != null) {
-    //   final tempDir = await getApplicationCacheDirectory();
-    //   final tempFilePath = '${tempDir.path}/temp_image.png';
-    //   final file = await File(tempFilePath).create();
-    //   await file.writeAsBytes(imageBytes!);
-    //   print('filepath ${file.path}');
+    if (imageBytes != null) {
+      final tempDir = await getApplicationDocumentsDirectory();
+      final tempFilePath = '${tempDir.path}/temp_image.png';
+      final file = await File(tempFilePath).create();
+      await file.writeAsBytes(imageBytes!);
+      print('filepath ${file.path}');
 
-    //   if (await file.exists()) {
-    //     final facebytes = await detectAndCropSingleFace(file);
-    //     if (facebytes == null) {
-    //       HomeController.instance.imagesList.clear();
-    //       HomeController.instance.celebrities.clear();
-    //       Get.off(const HomePage(), transition: Transition.fade);
-    //       return;
-    //     }
-    //     HomeController.instance.addImages(facebytes);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return DisplayCapturedImageDialog(files: file);
+        },
+      );
 
-    //     if (counter < celebritiesLength - 1) {
-    //       setState(() {
-    //         counter++;
-    //       });
-    //     } else {
-    //       Navigator.of(context)
-    //           .push(MaterialPageRoute(builder: (context) => ResultScreen()));
-    //     }
-    //   } else {
-    //     print('File does not exist');
-    //   }
-    // } else {
-    //   print('imagebytes are null');
-    // }
+      // if (await file.exists()) {
+      //   final facebytes = await detectAndCropSingleFace(file);
+      //   if (facebytes == null) {
+      //     HomeController.instance.imagesList.clear();
+      //     HomeController.instance.celebrities.clear();
+      //     Get.off(const HomePage(), transition: Transition.fade);
+      //     return;
+      //   }
+      //   HomeController.instance.addImages(facebytes);
+
+      //   if (counter < celebritiesLength - 1) {
+      //     setState(() {
+      //       counter++;
+      //     });
+      //   } else {
+      //     Navigator.of(context)
+      //         .push(MaterialPageRoute(builder: (context) => ResultScreen()));
+      //   }
+      // } else {
+      //   print('File does not exist');
+      // }
+    } else {
+      print('imagebytes are null');
+    }
   }
 
   Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
@@ -173,7 +172,6 @@ class _WebScreenShotsState extends State<WebScreenShots> {
 
   @override
   Widget build(BuildContext context) {
-  
     return Scaffold(
       body: Container(
         width: double.infinity,

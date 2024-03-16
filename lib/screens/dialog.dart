@@ -1,10 +1,11 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 class DisplayCapturedImageDialog extends StatelessWidget {
-  final Uint8List? imageBytes;
+  final File? files;
 
-  const DisplayCapturedImageDialog({Key? key, this.imageBytes}) : super(key: key);
+  const DisplayCapturedImageDialog({Key? key, this.files}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +13,9 @@ class DisplayCapturedImageDialog extends StatelessWidget {
       title: Text('Captured Image'),
       content: SingleChildScrollView(
         child: Center(
-          child: imageBytes != null
-              ? Image.memory(
-                  imageBytes!,
+          child: files != null
+              ? Image.file(
+                  files!,
                   fit: BoxFit.contain,
                 )
               : Text('No image captured'),
