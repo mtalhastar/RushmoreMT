@@ -15,10 +15,9 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<String> celebrities = [];
   TextEditingController questionController = TextEditingController();
-
+  final controller = Get.put(HomeController());
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     HomeController.instance.celebrities.clear();
     HomeController.instance.imagesList.clear();
@@ -29,50 +28,65 @@ class _HomePageState extends State<HomePage> {
     final validation = _formKey.currentState!.validate();
 
     if (!validation || questionController.text.isEmpty) {
-      Get.snackbar('Invalid Data', 'Your Fields might be empty');
+      // Get.snackbar('Invalid Data', 'Your Fields might be empty');
       return;
     } else {
       _formKey.currentState!.save();
       HomeController.instance.addCeleberities(celebrities);
       HomeController.instance.questions = questionController.text;
-      //if flicker button is pressed on snackbar then this
-      //else this
-      Get.defaultDialog(
-        title: 'Choose The Platform',
-        titlePadding: const EdgeInsets.all(20),
-        content: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Choose The Platform'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                InkWell(
-                    onTap: () {
-                      Get.to(const WebScreenShots(
-                        url: 'https://www.shutterstock.com/search/',
-                        params: '?image_type=photo&category=People',
-                      ));
-                    },
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      child: Image.asset('assets/images/stock.png'),
-                    )),
-                InkWell(
-                    onTap: () {
-                      Get.to(const WebScreenShots(
-                        url: 'https://www.google.com/search?q=',
-                        params: '&tbm=isch&source=lnms',
-                      ));
-                    },
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      child: Image.asset('assets/images/google.png'),
-                    ))
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WebScreenShots(
+                              url: 'https://www.shutterstock.com/search/',
+                              params: '?image_type=photo&category=People',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        child: Image.asset('assets/images/stock.png'),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WebScreenShots(
+                              url: 'https://www.google.com/search?q=',
+                              params: '&tbm=isch&source=lnms',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        child: Image.asset('assets/images/google.png'),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
+          );
+        },
       );
     }
   }
@@ -117,7 +131,12 @@ class _HomePageState extends State<HomePage> {
                   Positioned(
                     right: 20,
                     child: InkWell(
-                      onTap: () => Get.off(Instructions()),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Instructions(),
+                        ),
+                      ),
                       child: Container(
                         width: 30,
                         height: 30,

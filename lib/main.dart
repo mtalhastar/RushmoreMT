@@ -13,9 +13,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      home: const GetStartedScreen(),
-      initialBinding: StoreBinding(),
+    return const MaterialApp(
+      home: GetStartedScreen(),
     );
   }
 }

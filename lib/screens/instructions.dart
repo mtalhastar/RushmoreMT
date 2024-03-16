@@ -246,7 +246,7 @@ class Instructions extends StatelessWidget {
                   onTap: () async {
                   
                    if (!await launchUrl(uri)) {
-                      Get.snackbar('Cannot Lauunch','Url changed');
+                      // Get.snackbar('Cannot Lauunch','Url changed');
                     }
                   },
                   child: Card(
@@ -260,7 +260,10 @@ class Instructions extends StatelessWidget {
                 height: 20,
               ),
               InkWell(
-                onTap: () => Get.off(const HomePage()),
+                onTap: () =>Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
+    ),
                 child: Container(
                   width: 284,
                   height: 57,

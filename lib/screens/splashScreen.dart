@@ -55,9 +55,13 @@ class GetStartedScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    Get.off( Instructions(),
-                        transition: Transition.fade,
-                        duration: const Duration(milliseconds: 500));
+                  Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => Instructions(),
+    fullscreenDialog: true, // If Instructions() is a fullscreen dialog
+  ),
+);
                   },
                   child: Container(
                     alignment: Alignment.center,

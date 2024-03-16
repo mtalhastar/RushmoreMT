@@ -41,6 +41,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   Uint8List? capturedImageBytes;
   ScreenshotController screenshotController = ScreenshotController();
   late Uint8List? imageBytes;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -76,9 +77,11 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   // }
 
   Future<void> captureScreenshot(BuildContext context) async {
-    await screenshotController.capture(delay:const Duration(seconds: 5)).then((Uint8List? image) {
+    await screenshotController
+        .capture(delay: const Duration(seconds: 1))
+        .then((Uint8List? image) {
       setState(() {
-       imageBytes = image;
+        imageBytes = image;
       });
       if (imageBytes != null) {
         showDialog(
@@ -92,7 +95,6 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     }).catchError((onError) {
       print(onError);
     });
-   
 
     // if (imageBytes != null) {
     //   final tempDir = await getApplicationCacheDirectory();
@@ -116,7 +118,8 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     //         counter++;
     //       });
     //     } else {
-    //       Get.off(const ResultScreen());
+    //       Navigator.of(context)
+    //           .push(MaterialPageRoute(builder: (context) => ResultScreen()));
     //     }
     //   } else {
     //     print('File does not exist');
@@ -138,7 +141,6 @@ class _WebScreenShotsState extends State<WebScreenShots> {
     try {
       final faces = await faceDetector.processImage(inputImage);
       if (faces.isEmpty) {
-        Get.snackbar('Face Status ', 'No face in the image found');
         return null;
       }
 
@@ -162,7 +164,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
       await imageFile.delete();
       return croppedFace;
     } catch (e) {
-      Get.snackbar('Error While detecting face ', 'Please try again');
+      // Get.snackbar('Error While detecting face ', 'Please try again');
       return null;
     } finally {
       await faceDetector.close();
@@ -171,6 +173,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
 
   @override
   Widget build(BuildContext context) {
+  
     return Scaffold(
       body: Container(
         width: double.infinity,
