@@ -178,9 +178,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                     ..setBackgroundColor(const Color.fromARGB(0, 249, 249, 249))
                     ..loadRequest(Uri.parse(
                         '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
-              Screenshot(
-              controller: screenshotController,
-              child: 
+              
             Positioned(
                 bottom: 0,
                 left: 0,
@@ -207,7 +205,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                                   topRight: Radius.circular(40.0)))),
                     ))
                   ]),
-                ))),
+                )),
             Positioned(
               bottom: 150,
               right: 100,
@@ -233,7 +231,9 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                   onTap: () async {
                     await captureScreenshot(context);
                   },
-                  child: Container(
+                  child:Screenshot(
+              controller: screenshotController,
+              child:  Container(
                     height: 60,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     alignment: Alignment.center,
@@ -258,7 +258,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                           fontSize: 20),
                     ),
                   ),
-                ))
+                )))
           ],
         ),
       ),
