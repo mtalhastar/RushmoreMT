@@ -6,6 +6,7 @@
 
 import 'dart:io';
 import 'dart:ui';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -77,55 +78,48 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   // }
 
   Future<void> captureScreenshot(BuildContext context) async {
+    File? file;
     await screenshotController
-        .capture(delay: const Duration(seconds: 1))
-        .then((Uint8List? image) {
-      setState(() {
-        imageBytes = image;
-      });
+        .capture(delay: const Duration(milliseconds: 20))
+        .then((Uint8List? image) async {
+      if (image != null) {
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath =
+            await File('${directory.path}/temp_image.png').create();
+        file = await imagePath.writeAsBytes(image);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return DisplayCapturedImageDialog(files: file);
+          },
+        );
+      }
       print(image.toString());
     }).catchError((onError) {
       print(onError);
     });
 
-    if (imageBytes != null) {
-      final tempDir = await getApplicationDocumentsDirectory();
-      final tempFilePath = '${tempDir.path}/temp_image.png';
-      final file = await File(tempFilePath).create();
-      await file.writeAsBytes(imageBytes!);
-      print('filepath ${file.path}');
+    // if (file != null && await file!.exists()) {
+    //   final facebytes = await detectAndCropSingleFace(file!);
+    //   if (facebytes == null) {
+    //     HomeController.instance.imagesList.clear();
+    //     HomeController.instance.celebrities.clear();
+    //     Get.off(const HomePage(), transition: Transition.fade);
+    //     return;
+    //   }
+    //   HomeController.instance.addImages(facebytes);
 
-      showDialog(
-        context: context,
-        builder: (context) {
-          return DisplayCapturedImageDialog(files: file);
-        },
-      );
-
-      // if (await file.exists()) {
-      //   final facebytes = await detectAndCropSingleFace(file);
-      //   if (facebytes == null) {
-      //     HomeController.instance.imagesList.clear();
-      //     HomeController.instance.celebrities.clear();
-      //     Get.off(const HomePage(), transition: Transition.fade);
-      //     return;
-      //   }
-      //   HomeController.instance.addImages(facebytes);
-
-      //   if (counter < celebritiesLength - 1) {
-      //     setState(() {
-      //       counter++;
-      //     });
-      //   } else {
-      //     Navigator.of(context)
-      //         .push(MaterialPageRoute(builder: (context) => ResultScreen()));
-      //   }
-      // } else {
-      //   print('File does not exist');
-      // }
-    } else {
-      print('imagebytes are null');
-    }
+    //   if (counter < celebritiesLength - 1) {
+    //     setState(() {
+    //       counter++;
+    //     });
+    //   } else {
+    //     Navigator.of(context)
+    //         .push(MaterialPageRoute(builder: (context) => ResultScreen()));
+    //   }
+    // } else {
+    //   print('File does not exist');
+    // }
   }
 
   Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
@@ -178,15 +172,15 @@ class _WebScreenShotsState extends State<WebScreenShots> {
         color: Colors.white,
         child: Stack(
           children: [
-            Screenshot(
-              controller: screenshotController,
-              child: WebViewWidget(
+          WebViewWidget(
                   controller: WebViewController()
                     ..setJavaScriptMode(JavaScriptMode.unrestricted)
                     ..setBackgroundColor(const Color.fromARGB(0, 249, 249, 249))
                     ..loadRequest(Uri.parse(
                         '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
-            ),
+              Screenshot(
+              controller: screenshotController,
+              child: 
             Positioned(
                 bottom: 0,
                 left: 0,
@@ -213,7 +207,7 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                                   topRight: Radius.circular(40.0)))),
                     ))
                   ]),
-                )),
+                ))),
             Positioned(
               bottom: 150,
               right: 100,

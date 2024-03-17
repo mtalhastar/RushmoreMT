@@ -46,6 +46,10 @@
         <string>sms</string>
         <string>tel</string>
     </array>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Your app needs access to the photo library for processing images.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Your app needs permission to save photos to the photo library.</string>
 	<key>NSCameraUsageDescription</key>
     <string>Your app needs access to the camera for capturing images.</string>
     <key>NSPhotoLibraryUsageDescription</key>
