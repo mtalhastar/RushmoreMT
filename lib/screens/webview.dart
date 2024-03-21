@@ -20,14 +20,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rushmore/screens/dialog.dart';
 import 'package:rushmore/screens/homeScreen.dart';
 import 'package:rushmore/screens/resultPage.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:rushmore/controllers/homeController.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
 // Import for Android features.
 
 class WebScreenShots extends StatefulWidget {
   final String url;
   final String params;
+
   const WebScreenShots({super.key, required this.url, required this.params});
 
   @override
@@ -42,84 +44,49 @@ class _WebScreenShotsState extends State<WebScreenShots> {
   Uint8List? capturedImageBytes;
   ScreenshotController screenshotController = ScreenshotController();
   late Uint8List? imageBytes;
+  late InAppWebViewController webView;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
-  //  Future<void> captureScreenshot() async {
-  //   RenderRepaintBoundary boundary = globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-  //   ui.Image image = await boundary.toImage();
-  //   ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-
-  //   if (byteData != null) {
-  //     final tempDir = await getApplicationDocumentsDirectory();
-  //     final tempFilePath = '${tempDir.path}/temp_image.png';
-  //     final file = await File(tempFilePath).writeAsBytes(byteData.buffer.asUint8List());
-
-  //     final facebytes = await detectAndCropSingleFace(file);
-  //     if (facebytes == null) {
-  //       HomeController.instance.imagesList.clear();
-  //       HomeController.instance.celebrities.clear();
-  //       Get.off(const HomePage(), transition: Transition.fade);
-  //       return;
-  //     }
-  //     HomeController.instance.addImages(facebytes);
-
-  //     if (counter < celebritiesLength - 1) {
-  //       setState(() {
-  //         counter++;
-  //       });
-  //     } else {
-  //       Get.off(const ResultScreen());
-  //     }
-  //   }
-  // }
 
   Future<void> captureScreenshot(BuildContext context) async {
     File? file;
-    await screenshotController
-        .capture(delay: const Duration(milliseconds: 20))
-        .then((Uint8List? image) async {
-      if (image != null) {
-        final directory = await getApplicationDocumentsDirectory();
-        final imagePath =
-            await File('${directory.path}/temp_image.png').create();
-        file = await imagePath.writeAsBytes(image);
-        showDialog(
-          context: context,
-          builder: (context) {
-            return DisplayCapturedImageDialog(files: file);
-          },
-        );
+    imageBytes = await webView.takeScreenshot();
+    if (imageBytes != null) {
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath = await File('${directory.path}/temp_image.png').create();
+      file = await imagePath.writeAsBytes(imageBytes!);
+    }
+
+    if (file != null && await file!.exists()) {
+      final facebytes = await detectAndCropSingleFace(file!);
+      if (facebytes == null) {
+        HomeController.instance.imagesList.clear();
+        HomeController.instance.celebrities.clear();
+        Get.off(const HomePage(), transition: Transition.fade);
+        return;
       }
-      print(image.toString());
-    }).catchError((onError) {
-      print(onError);
-    });
+      HomeController.instance.addImages(facebytes);
 
-    // if (file != null && await file!.exists()) {
-    //   final facebytes = await detectAndCropSingleFace(file!);
-    //   if (facebytes == null) {
-    //     HomeController.instance.imagesList.clear();
-    //     HomeController.instance.celebrities.clear();
-    //     Get.off(const HomePage(), transition: Transition.fade);
-    //     return;
-    //   }
-    //   HomeController.instance.addImages(facebytes);
-
-    //   if (counter < celebritiesLength - 1) {
-    //     setState(() {
-    //       counter++;
-    //     });
-    //   } else {
-    //     Navigator.of(context)
-    //         .push(MaterialPageRoute(builder: (context) => ResultScreen()));
-    //   }
-    // } else {
-    //   print('File does not exist');
-    // }
+      if (counter < celebritiesLength - 1) {
+        setState(() {
+          counter++;
+          webView.loadUrl(
+              urlRequest: URLRequest(
+                  url: WebUri(
+                      '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}')));
+         
+        });
+      } else {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => ResultScreen()));
+      }
+    } else {
+      print('File does not exist');
+    }
   }
 
   Future<Uint8List?> detectAndCropSingleFace(File imageFile) async {
@@ -172,13 +139,14 @@ class _WebScreenShotsState extends State<WebScreenShots> {
         color: Colors.white,
         child: Stack(
           children: [
-          WebViewWidget(
-                  controller: WebViewController()
-                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                    ..setBackgroundColor(const Color.fromARGB(0, 249, 249, 249))
-                    ..loadRequest(Uri.parse(
-                        '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}'))),
-              
+            InAppWebView(
+              initialUrlRequest: URLRequest(
+                  url: WebUri(
+                      '${widget.url}${HomeController.instance.celebrities[counter]}${widget.params}')),
+              onWebViewCreated: (InAppWebViewController controller) {
+                webView = controller;
+              },
+            ),
             Positioned(
                 bottom: 0,
                 left: 0,
@@ -228,37 +196,36 @@ class _WebScreenShotsState extends State<WebScreenShots> {
                 right: 40,
                 left: 40,
                 child: InkWell(
-                  onTap: () async {
-                    await captureScreenshot(context);
-                  },
-                  child:Screenshot(
-              controller: screenshotController,
-              child:  Container(
-                    height: 60,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              Color.fromARGB(255, 36, 36, 36), // Shadow color
-                          offset: Offset(0, 2), // Offset in x and y directions
-                          blurRadius: 4, // Blur radius
-                          spreadRadius: 0, // Spread radius
+                    onTap: () async {
+                      await captureScreenshot(context);
+                    },
+                    child:Container(
+                        height: 60,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(
+                                  255, 36, 36, 36), // Shadow color
+                              offset:
+                                  Offset(0, 2), // Offset in x and y directions
+                              blurRadius: 4, // Blur radius
+                              spreadRadius: 0, // Spread radius
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: const Text(
-                      'Process Image',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-                  ),
-                )))
+                        child: const Text(
+                          'Process Image',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
+                      ),
+                    ))
           ],
         ),
       ),

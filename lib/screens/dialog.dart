@@ -10,7 +10,7 @@ class DisplayCapturedImageDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Captured Image'),
+      title: const Text('Captured Image'),
       content: SingleChildScrollView(
         child: Center(
           child: files != null
@@ -18,7 +18,7 @@ class DisplayCapturedImageDialog extends StatelessWidget {
                   files!,
                   fit: BoxFit.contain,
                 )
-              : Text('No image captured'),
+              : const Text('No image captured'),
         ),
       ),
       actions: [
@@ -26,7 +26,7 @@ class DisplayCapturedImageDialog extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Close'),
+          child:const Text('Close'),
         ),
       ],
     );
